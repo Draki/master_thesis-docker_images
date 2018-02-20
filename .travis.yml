@@ -8,12 +8,15 @@ script:
 # build image
 - docker build -t danielrodriguez/docker-spark-raspbian .
 # test image
-- docker run danielrodriguez/docker-spark-raspbian spark-submit --version
+- docker run danielrodriguez/docker-spark-raspbian spark-shell --version
 # push image
 - >
   if "$TRAVIS_PULL_REQUEST" == "false" ; then
     docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
     TAG=$(grep "ENV SPARK_VERSION" Dockerfile | awk 'NF>1{print $NF}')
+    if "$TRAVIS_BRANCH" != "master" ; then
+      TAG+= $TRAVIS_BRANCH
+    fi
     docker tag danielrodriguez/docker-spark-raspbian danielrodriguez/docker-spark-raspbian:$TAG
     docker push danielrodriguez/docker-spark-raspbian:$TAG
     docker push danielrodriguez/docker-spark-raspbian
