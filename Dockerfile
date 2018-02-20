@@ -2,7 +2,7 @@ FROM resin/rpi-raspbian:jessie
 MAINTAINER Resin.io "https://github.com/resin-io-library/resin-rpi-raspbian"
 
 RUN apt-get update \
- && apt-get install -y apt-utils locales \
+ && apt-get install -y locales \
  && dpkg-reconfigure -f noninteractive locales \
  && locale-gen C.UTF-8 \
  && /usr/sbin/update-locale LANG=C.UTF-8 \
