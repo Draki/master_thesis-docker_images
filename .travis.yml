@@ -8,7 +8,7 @@ script:
 # build image
 - docker build -t danielrodriguez/docker-spark-raspbian .
 # test image
-- docker run danielrodriguez/docker-spark-raspbian spark --version
+- docker run danielrodriguez/docker-spark-raspbian spark-submit --version
 # push image
 - >
   if "$TRAVIS_PULL_REQUEST" == "false" ; then

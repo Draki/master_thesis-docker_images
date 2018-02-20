@@ -1,0 +1,68 @@
+version: '3.4'
+
+services:
+
+  spark-master:
+    image: danielrodriguez/distributed-spark-proof:threedirs
+    command: bin/spark-class org.apache.spark.deploy.master.Master -h spark-master
+    hostname: spark-master
+    environment:
+      MASTER: spark://spark-master:7077
+      SPARK_CONF_DIR: /conf/master
+      SPARK_PUBLIC_DNS: localhost
+    ports:
+      - 4040:4040
+      - 6066:6066
+      - 7077:7077
+      - 8080:8080
+    volumes:
+      - type: bind
+        read_only: true
+        source: app
+        target: /usr/spark-2.2.0/app
+      - type: bind
+        read_only: true
+        source: data
+        target: /usr/spark-2.2.0/data
+      - type: bind
+        source: results
+        target: /usr/spark-2.2.0/results
+    deploy:
+      placement:
+        constraints: [engine.labels.danir2.machine.role == manager]
+    networks:
+      thesisnet:
+        aliases:
+          - spark-master
+
+  spark-worker:
+    image: danielrodriguez/distributed-spark-proof
+    command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    hostname: spark-worker
+    environment:
+      SPARK_CONF_DIR: /conf/worker
+      SPARK_WORKER_CORES: 2
+      SPARK_WORKER_MEMORY: 4g
+      SPARK_WORKER_PORT: 8881
+      SPARK_WORKER_WEBUI_PORT: 8081
+      SPARK_PUBLIC_DNS: localhost
+    depends_on:
+      - spark-master
+    deploy:
+      mode: replicated
+      replicas: 3
+      placement:
+        constraints: [engine.labels.danir2.machine.role == worker]
+      restart_policy:
+        condition: on-failure
+    networks:
+      thesisnet:
+
+networks:
+  thesisnet:
+    driver: overlay
+
+volumes:
+  app:
+  data:
+  results:
