@@ -14,7 +14,7 @@ script:
   if "$TRAVIS_PULL_REQUEST" == "false" ; then
     docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
     TAG=$(grep "ENV SPARK_VERSION" Dockerfile | awk 'NF>1{print $NF}')
-    docker tag draki/docker-spark-raspbian draki/docker-spark-raspbian:$TAG
-    docker push draki/docker-spark-raspbian:$TAG
-    docker push draki/docker-spark-raspbian
+    docker tag danielrodriguez/docker-spark-raspbian draki/docker-spark-raspbian:$TAG
+    docker push danielrodriguez/docker-spark-raspbian:$TAG
+    docker push danielrodriguez/docker-spark-raspbian
   fi
