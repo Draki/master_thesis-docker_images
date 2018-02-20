@@ -1,4 +1,4 @@
-FROM resin/rpi-raspbian:jessie
+FROM resin/raspberrypi3-debian:jessie
 MAINTAINER Resin.io "https://github.com/resin-io-library/resin-rpi-raspbian"
 
 RUN apt-get update \
@@ -67,7 +67,7 @@ RUN curl -sL --retry 3 \
   | gunzip \
   | tar x -C /usr/ \
  && mv /usr/$SPARK_PACKAGE $SPARK_HOME \
-&& chown -R root:root $SPARK_HOME
+ && chown -R root:root $SPARK_HOME
 
 # Copy configuration files to the image
 COPY conf .
