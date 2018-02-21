@@ -13,8 +13,7 @@ push:
 	docker push $(DOCKER_IMAGE_NAME)
 
 test:
-    docker run --rm $(DOCKER_IMAGE_TAGNAME) /bin/echo "Success."
+	docker run --rm $(DOCKER_IMAGE_TAGNAME) /bin/echo "Success."
 
 version:
 	docker run --rm $(DOCKER_IMAGE_TAGNAME) java -version
-    docker run --rm danielrodriguez/docker-spark-raspbian spark-shell --version
