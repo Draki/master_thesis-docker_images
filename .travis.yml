@@ -7,10 +7,10 @@ language: bash
 
 env:
   global:
-    - JAVA_VERSION=jdk1.8.0_131
+    - JAVA_VERSION=jdk1.8.131
       HADOOP_VERSION=hadoop-2.7.3
       SPARK_VERSION=spark-2.2.1
-      VERSION=${JAVA_VERSION}_${HADOOP_VERSION}_${SPARK_VERSION}.${TRAVIS_BUILD_NUMBER}
+      VERSION=${JAVA_VERSION}_${HADOOP_VERSION}_${SPARK_VERSION}_build${TRAVIS_BUILD_NUMBER}
   matrix:
     - ARCH=x86_64
       DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
