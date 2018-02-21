@@ -1,41 +1,30 @@
-#sudo: required
-#services:
-#- docker
-#language: bash
-#script:
-## prepare qemu
-#- docker run --rm --privileged multiarch/qemu-user-static:register --reset
-## build image
-#- docker build -t danielrodriguez/docker-spark-raspbian .
-## test image
-#- docker run danielrodriguez/docker-spark-raspbian spark-shell --version
-## push image
-#- >
-#  if "$TRAVIS_PULL_REQUEST" == "false" ; then
-#    docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
-#    TAG=$(grep "ENV SPARK_VERSION" Dockerfile | awk 'NF>1{print $NF}')
-#    if "$TRAVIS_BRANCH" != "master" ; then
-#      TAG+= $TRAVIS_BRANCH
-#    fi
-#    docker tag danielrodriguez/docker-spark-raspbian danielrodriguez/docker-spark-raspbian:$TAG
-#    docker push danielrodriguez/docker-spark-raspbian:$TAG
-#    docker push danielrodriguez/docker-spark-raspbian
-#  fi
 sudo: required
 services:
 - docker
 language: bash
 script:
+DOCKER_IMAGE_VERSION=jdk-1.8.131_hadoop-2.7.3_spark-2.2.1
+DOCKER_IMAGE_NAME=danielrodriguez/docker-spark-raspbian
+DOCKER_IMAGE_TAGNAME=$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_VERSION)
+DOCKER_TAG=latest
 # prepare qemu
 - docker run --rm --privileged multiarch/qemu-user-static:register --reset
 # build image
-- make build
+- docker build -t $(DOCKER_IMAGE_NAME_TAGNAME) .
 # test image
-- make test
-- make version
+- docker run --rm $(DOCKER_IMAGE_TAGNAME) /bin/echo "Success."
+- docker run --rm $(DOCKER_IMAGE_TAGNAME) java -version
+#- docker run danielrodriguez/docker-spark-raspbian spark-shell --version
 # push image
 - >
-  if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+  if "$TRAVIS_PULL_REQUEST" == "false" ; then
     docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
-    make push
+    TAG=$(grep "ENV SPARK_VERSION" Dockerfile | awk 'NF>1{print $NF}')
+    if "$TRAVIS_BRANCH" != "master" ; then
+      DOCKER_TAG= $TRAVIS_BRANCH
+    fi
+    docker tag danielrodriguez/docker-spark-raspbian danielrodriguez/docker-spark-raspbian:$TAG
+    docker tag $(DOCKER_IMAGE_TAGNAME) $(DOCKER_IMAGE_NAME):$(DOCKER_TAG)
+    docker push $(DOCKER_IMAGE_TAGNAME)
+    docker push $(DOCKER_IMAGE_NAME)
   fi
