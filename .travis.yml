@@ -1,25 +1,41 @@
 sudo: required
+
 services:
 - docker
+
 language: bash
-script:
+
+env:
+  global:
+    - JAVA_VERSION=jdk1.8.0_131
+      HADOOP_VERSION=hadoop-2.7.3
+      SPARK_VERSION=spark-2.2.1
+      VERSION=${JAVA_VERSION}_${HADOOP_VERSION}_${SPARK_VERSION}.${TRAVIS_BUILD_NUMBER}
+  matrix:
+    - ARCH=x86_64
+      DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
+      DOCKERFILE=Dockerfile.amd64
+    - ARCH=rpi
+      DOCKER_BUILD=danielrodriguez/docker-spark-debian
+      DOCKERFILE=Dockerfile.rpi
+
 script:
 # prepare qemu
 - docker run --rm --privileged multiarch/qemu-user-static:register --reset
 # build image
-- docker build -t danielrodriguez/docker-spark-raspbian:jdk-1.8.131_hadoop-2.7.3_spark-2.2.1 .
+- docker build -t ${DOCKER_BUILD}:${VERSION} -f ${DOCKERFILE} .
 # test image
-- docker run --rm danielrodriguez/docker-spark-raspbian:jdk-1.8.131_hadoop-2.7.3_spark-2.2.1 /bin/echo "Success."
-#- docker run --rm danielrodriguez/docker-spark-raspbian:jdk-1.8.131_hadoop-2.7.3_spark-2.2.1 spark-shell --version
+- docker run --rm ${DOCKER_BUILD}:${VERSION} /bin/echo "Success."
+#- docker run --rm ${DOCKER_BUILD}:${VERSION} spark-shell --version
 # push image
 - >
   if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
-    docker tag danielrodriguez/docker-spark-raspbian:jdk-1.8.131_hadoop-2.7.3_spark-2.2.1 danielrodriguez/docker-spark-raspbian:latest
-    docker push danielrodriguez/docker-spark-raspbian:jdk-1.8.131_hadoop-2.7.3_spark-2.2.1
-    docker push danielrodriguez/docker-spark-raspbian
+    docker tag ${DOCKER_BUILD}:${VERSION} ${DOCKER_BUILD}:latest
+    docker push ${DOCKER_BUILD}:${VERSION}
+    docker push ${DOCKER_BUILD}
   elif [ "$TRAVIS_BRANCH" != "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
-    docker tag danielrodriguez/docker-spark-raspbian:jdk-1.8.131_hadoop-2.7.3_spark-2.2.1 danielrodriguez/docker-spark-raspbian:$TRAVIS_BRANCH
-    docker push danielrodriguez/docker-spark-raspbian
+    docker tag ${DOCKER_BUILD}:${VERSION} ${DOCKER_BUILD}:$TRAVIS_BRANCH
+    docker push ${DOCKER_BUILD}
   fi
