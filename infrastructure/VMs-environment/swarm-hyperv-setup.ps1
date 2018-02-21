@@ -16,10 +16,10 @@ $managers=1
 $workers=3
 
 # Current development github branch
-$GithubBranch="docker_bind_volumes"
+$GithubBranch="master"
 
 # Pointer to the stack-descriptor file
-$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis/$GithubBranch/infrastructure/docker-stack.yml"
+$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_amd64.yml"
 
 
 

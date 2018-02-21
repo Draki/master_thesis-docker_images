@@ -7,14 +7,16 @@ Work finished:
         - VMs teardown
         - Hibrid setup1
         - Hibrid teardown
-        - rpi setup1
-        - rpi teardown    
+        - Rpi setup1
+        - Rpi teardown    
     · Dockerfiles
         - amd64
-        - rpi
+        - Rpi
     · Continuous Integration
         - Travis rpi
         - Travis amd64
+    · Docker-stack
+        - VMs
     · Deployment:
         - VMs setup2
         
@@ -23,7 +25,10 @@ Work in progress:
 
     · Infrastructure:
         - Docker labels
+    · Docker-stack
+        - Hibrid
+        - Rpi
     · Deployment:
         - Hibrid setup2
-        - rpi setup2
+        - Rpi setup2
         
