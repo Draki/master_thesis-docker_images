@@ -1,3 +1,26 @@
+#sudo: required
+#services:
+#- docker
+#language: bash
+#script:
+## prepare qemu
+#- docker run --rm --privileged multiarch/qemu-user-static:register --reset
+## build image
+#- docker build -t danielrodriguez/docker-spark-raspbian .
+## test image
+#- docker run danielrodriguez/docker-spark-raspbian spark-shell --version
+## push image
+#- >
+#  if "$TRAVIS_PULL_REQUEST" == "false" ; then
+#    docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+#    TAG=$(grep "ENV SPARK_VERSION" Dockerfile | awk 'NF>1{print $NF}')
+#    if "$TRAVIS_BRANCH" != "master" ; then
+#      TAG+= $TRAVIS_BRANCH
+#    fi
+#    docker tag danielrodriguez/docker-spark-raspbian danielrodriguez/docker-spark-raspbian:$TAG
+#    docker push danielrodriguez/docker-spark-raspbian:$TAG
+#    docker push danielrodriguez/docker-spark-raspbian
+#  fi
 sudo: required
 services:
 - docker
@@ -6,18 +29,13 @@ script:
 # prepare qemu
 - docker run --rm --privileged multiarch/qemu-user-static:register --reset
 # build image
-- docker build -t danielrodriguez/docker-spark-raspbian .
+- make build
 # test image
-- docker run danielrodriguez/docker-spark-raspbian spark-shell --version
+- make test
+- make version
 # push image
 - >
-  if "$TRAVIS_PULL_REQUEST" == "false" ; then
+  if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
-    TAG=$(grep "ENV SPARK_VERSION" Dockerfile | awk 'NF>1{print $NF}')
-    if "$TRAVIS_BRANCH" != "master" ; then
-      TAG+= $TRAVIS_BRANCH
-    fi
-    docker tag danielrodriguez/docker-spark-raspbian danielrodriguez/docker-spark-raspbian:$TAG
-    docker push danielrodriguez/docker-spark-raspbian:$TAG
-    docker push danielrodriguez/docker-spark-raspbian
+    make push
   fi
