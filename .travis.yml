@@ -3,10 +3,10 @@ services:
 - docker
 language: bash
 script:
-DOCKER_IMAGE_VERSION=jdk-1.8.131_hadoop-2.7.3_spark-2.2.1
-DOCKER_IMAGE_NAME=danielrodriguez/docker-spark-raspbian
-DOCKER_IMAGE_TAGNAME=$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_VERSION)
-DOCKER_TAG=latest
+- DOCKER_IMAGE_VERSION=jdk-1.8.131_hadoop-2.7.3_spark-2.2.1
+- DOCKER_IMAGE_NAME=danielrodriguez/docker-spark-raspbian
+- DOCKER_IMAGE_TAGNAME=$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_VERSION)
+- DOCKER_TAG=latest
 # prepare qemu
 - docker run --rm --privileged multiarch/qemu-user-static:register --reset
 # build image
