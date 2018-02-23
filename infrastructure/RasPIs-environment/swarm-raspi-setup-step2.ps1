@@ -5,18 +5,29 @@
 $SwitchName = "DockerNAT"
 # Run from PowerShell console as Administrator with the command:
 #   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesisB\infrastructure\RasPIs-environment\docker-machine-pcmanager-raspis\swarm-raspi-setup-step2.ps1
-# Swarm mode using Docker Machine
+# Swarm mode using raspberryPIes
 
+
+# Current development github branch
+$GithubBranch="infrastructure_deployment"
+
+# Pointer to the stack-descriptor file
+$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_rpi.yml"
+
+
+
+
+$rasPiManagers = @("node1")
+$managerZero = $rasPiManagers[0]
 
 # Chose a name for the stack, number of manager machines and number of worker machines
 $StackName="TheStackOfDani"
 
-# Current development github branch
-$GithubBranch="docker_bind_volumes"
 
-# Pointer to the stack-descriptor file
-$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis/$GithubBranch/infrastructure/docker-stack.yml"
 
+
+
+WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" "call docker node ls" "exit"
 
 
 $fromNow = Get-Date
@@ -25,18 +36,23 @@ $fromNow = Get-Date
 docker-machine ls
 
 # show members of swarm
-docker-machine ssh manager "docker node ls"
+$dockerCommand = "docker node ls"
+WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" "call $dockerCommand" "exit"
+
 
 # Prepare the node manager:
-docker-machine ssh manager "mkdir app; mkdir data; mkdir results"
+$dockerCommand = "mkdir app; mkdir data; mkdir results"
 
 # Get the docker-stack.yml file from github:
-docker-machine ssh manager "wget $DockerStackFile --no-check-certificate --output-document docker-stack.yml"
+$dockerCommand2 = "wget $DockerStackFile --no-check-certificate --output-document docker-stack.yml"
 
 # And deploy it:
-docker-machine ssh manager "docker stack deploy --compose-file docker-stack.yml $StackName"
+$dockerCommand3 = "docker stack deploy --compose-file docker-stack.yml $StackName"
+
 # show the service
-docker-machine ssh manager "docker stack services $StackName"
+$dockerCommand4 = "docker stack services $StackName"
+
+WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" "call $dockerCommand1" "call $dockerCommand2" "call $dockerCommand3" "call $dockerCommand4" "exit"
 
 
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds
