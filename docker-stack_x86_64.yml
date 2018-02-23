@@ -30,7 +30,7 @@ services:
     deploy:
       placement:
         constraints:
-          - labels.danir2.machine.role == manager
+          - node.labels.role == spark_manager
     networks:
       thesisnet:
         aliases:
@@ -54,7 +54,7 @@ services:
       replicas: 3
       placement:
         constraints:
-          - labels.danir2.machine.role == worker
+          - node.labels.role == spark_worker
       restart_policy:
         condition: on-failure
     networks:

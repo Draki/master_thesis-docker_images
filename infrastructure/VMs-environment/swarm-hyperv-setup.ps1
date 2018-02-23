@@ -59,7 +59,7 @@ for ($node=2;$node -le $managers;$node++) {
 	echo "======> manager$node joining swarm as manager ..."
 	$nodeip = docker-machine ip manager$node
 	docker-machine ssh "manager$node" "docker swarm join --token $managertoken --listen-addr $nodeip --advertise-addr $nodeip $manager1ip"
-	docker-machine ssh manager1 "docker node update --label-add danir2.machine.role=manager manager$node"
+	docker-machine ssh manager1 "docker node update --label-add danir2.machine.role=worker manager$node"
 }
 # show members of swarm
 docker-machine ssh manager1 "docker node ls"
