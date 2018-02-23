@@ -13,7 +13,7 @@ $SwitchName = "virtualPFC"
 $GithubBranch="infrastructure_deployment"
 
 # Pointer to the stack-descriptor file
-$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_amd64.yml"
+$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_x86_64.yml"
 
 
 # Chose a name for the stack, number of manager machines and number of worker machines
@@ -93,4 +93,4 @@ echo "======>"
 echo "======> The deployment took: $timeItTook seconds"
 
 echo "======>"
-echo "======> You can access to the web user interface of the spark master at: $manager1ip:8080"
+echo "======> You can access to the web user interface of the spark master at: $manager1ip :8080"
