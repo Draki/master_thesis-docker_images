@@ -31,7 +31,6 @@ services:
       placement:
         constraints:
           - labels.danir2.machine.role == manager
-          - platform.architecture == x86_64
     networks:
       thesisnet:
         aliases:
@@ -56,7 +55,6 @@ services:
       placement:
         constraints:
           - labels.danir2.machine.role == worker
-          - platform.architecture == x86_64
       restart_policy:
         condition: on-failure
     networks:

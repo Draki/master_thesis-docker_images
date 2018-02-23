@@ -44,7 +44,8 @@ Foreach ($node in $rasPiWorkers) {
     $labels += " ""call docker node update --label-add danir2.machine.role=worker $node"""
 }
 
-# Label all nodes with thier roles
+# Label all nodes with their roles
+echo "======> Labeling each node with their role ..."
 WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" $labels "exit"
 
 # show members of swarm
