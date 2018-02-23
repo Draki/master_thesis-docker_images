@@ -14,7 +14,7 @@ env:
   matrix:
     - ARCH=x86_64
       DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
-      DOCKERFILE=Dockerfile.amd64
+      DOCKERFILE=Dockerfile.x86_64
     - ARCH=rpi
       DOCKER_BUILD=danielrodriguez/docker-spark-debian
       DOCKERFILE=Dockerfile.rpi

@@ -1,5 +1,7 @@
 FROM debian:jessie
-MAINTAINER Getty Images "https://github.com/gettyimages"
+MAINTAINER DaniR2 "https://github.com/Draki/master_thesis-docker_images"
+
+LABEL danir2.architecture="x86_64"
 
 RUN apt-get update \
  && apt-get install -y locales \

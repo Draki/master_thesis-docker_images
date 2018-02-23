@@ -4,22 +4,25 @@
 # At the Hyper-V Manager app on Windows, under "ethernet adapter", create a Virtual Switch (as an "external network") called:
 $SwitchName = "virtualPFC"
 # Run from PowerShell console as Administrator with the command:
-#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesisB\infrastructure\VMs-environment\docker-machine-VMs\swarm-node-hyperv-setup.ps1
+#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\VMs-environment\swarm-hyperv-setup.ps1
 
 # Swarm mode using Docker Machine
+
+
+# Current development github branch
+$GithubBranch="infrastructure_deployment"
+
+# Pointer to the stack-descriptor file
+$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_amd64.yml"
 
 
 # Chose a name for the stack, number of manager machines and number of worker machines
 $StackName="TheStackOfDani"
 
+
 $managers=1
 $workers=3
 
-# Current development github branch
-$GithubBranch="master"
-
-# Pointer to the stack-descriptor file
-$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_amd64.yml"
 
 
 
@@ -29,14 +32,14 @@ $fromNow = Get-Date
 echo "======> Creating manager machines ..."
 for ($node=1;$node -le $managers;$node++) {
 	echo "======> Creating manager$node machine ..."
-	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --engine-label danir2.machine.role=manager ('manager'+$node)
+	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName ('manager'+$node)
 }
 
 # create worker machines
 echo "======> Creating worker machines ..."
 for ($node=1;$node -le $workers;$node++) {
 	echo "======> Creating worker$node machine ..."
-	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --engine-label danir2.machine.role=worker ('worker'+$node)
+	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName ('worker'+$node)
 }
 
 # list all machines
@@ -45,6 +48,7 @@ echo "======> Initializing first swarm manager ..."
 $manager1ip = docker-machine ip manager1
 
 docker-machine ssh manager1 "docker swarm init --listen-addr $manager1ip --advertise-addr $manager1ip"
+docker-machine ssh manager1 "docker node update --label-add danir2.machine.role=manager manager1"
 
 # get manager and worker tokens
 $managertoken = docker-machine ssh manager1 "docker swarm join-token manager -q"
@@ -55,6 +59,7 @@ for ($node=2;$node -le $managers;$node++) {
 	echo "======> manager$node joining swarm as manager ..."
 	$nodeip = docker-machine ip manager$node
 	docker-machine ssh "manager$node" "docker swarm join --token $managertoken --listen-addr $nodeip --advertise-addr $nodeip $manager1ip"
+	docker-machine ssh manager1 "docker node update --label-add danir2.machine.role=manager manager$node"
 }
 # show members of swarm
 docker-machine ssh manager1 "docker node ls"
@@ -64,6 +69,7 @@ for ($node=1;$node -le $workers;$node++) {
 	echo "======> worker$node joining swarm as worker ..."
 	$nodeip = docker-machine ip worker$node
 	docker-machine ssh "worker$node" "docker swarm join --token $workertoken --listen-addr $nodeip --advertise-addr $nodeip $manager1ip"
+	docker-machine ssh manager1 "docker node update --label-add danir2.machine.role=worker worker$node"
 }
 
 # show members of swarm
@@ -87,4 +93,4 @@ echo "======>"
 echo "======> The deployment took: $timeItTook seconds"
 
 echo "======>"
-echo "======> You can access to the web user interface of the spark master at: $manager1ip :8080"
+echo "======> You can access to the web user interface of the spark master at: $manager1ip:8080"

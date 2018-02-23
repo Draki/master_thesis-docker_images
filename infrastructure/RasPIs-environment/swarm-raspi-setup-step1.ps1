@@ -14,20 +14,22 @@ $rasPiWorkers = @("node2","node3","node4")
 
 
 $fromNow = Get-Date
-$rasPiManagerZero = $rasPiManagers[0]
+$managerZero = $rasPiManagers[0]
 
 echo "======> Initializing the original swarm manager in node1 ..."         # And storing the command to join as a worker node
-$joinAsWorker = (WinSCP.com /command "open sftp://pirate:hypriot@$rasPiManagerZero/ -hostkey=*" "call docker swarm init" "exit" | Select-String -Pattern 'docker swarm join --token').Line.trim()
+$joinAsWorker = (WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" "call docker swarm init" "exit" | Select-String -Pattern 'docker swarm join --token').Line.trim()
+$labels = """call docker node update --label-add danir2.machine.role=manager node1"""
 
 # In case we got additional managers:
 If ($rasPiManagers.Length -gt 1) {
     echo "======> Joining additional managers ..."
-    $managertoken = WinSCP.com /command "open sftp://pirate:hypriot@$rasPiManagerZero/ -hostkey=*" "call docker swarm join-token manager -q" "exit" | Select -Last 1
+    $managertoken = WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" "call docker swarm join-token manager -q" "exit" | Select -Last 1
     $joinAsManager = $joinAsWorker -replace '(?<=token\s)(.*?)(?=\s192\.168\.1\.\d+\:\d+)', $managertoken
 
     Foreach ($node in $rasPiManagers[1..($rasPiManagers.Length-1)]) {
         echo "Master node '$node' joining the swarm"
         WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call $joinAsManager" "exit"
+        $labels += " ""call docker node update --label-add danir2.machine.role=manager $node"""
     }
 }
 
@@ -39,10 +41,14 @@ echo ""
 Foreach ($node in $rasPiWorkers) {
     echo "$node joining the swarm"
     WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call $joinAsWorker" "exit"
+    $labels += " ""call docker node update --label-add danir2.machine.role=worker $node"""
 }
 
+# Label all nodes with thier roles
+WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" $labels "exit"
+
 # show members of swarm
-WinSCP.com /command "open sftp://pirate:hypriot@$rasPiManagerZero/ -hostkey=*" "call docker node ls" "exit"
+WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" "call docker node ls" "exit"
 
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds
 echo "======>"
