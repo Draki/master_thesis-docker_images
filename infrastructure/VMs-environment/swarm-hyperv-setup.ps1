@@ -22,70 +22,85 @@ $StackName="TheStackOfDani"
 
 $managers=1
 $workers=3
+$managers = @("node1")
+$workers = @("node2","node3","node4")
+$managerZero = $managers[0]
 
 
-
-
+## Creating virtual machines...
+echo "`n>>>>>>>>>> Creating virtual machines <<<<<<<<<<`n"
 $fromNow = Get-Date
-
 # create manager machines
 echo "======> Creating manager machines ..."
-for ($node=1;$node -le $managers;$node++) {
-	echo "======> Creating manager$node machine ..."
-	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName ('manager'+$node)
+Foreach ($node in $managers) {
+	echo "======> Creating $node machine ..."
+	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName $node
 }
 
 # create worker machines
 echo "======> Creating worker machines ..."
 for ($node=1;$node -le $workers;$node++) {
-	echo "======> Creating worker$node machine ..."
-	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName ('worker'+$node)
+Foreach ($node in $workers) {
+	echo "======> Creating $node machine ..."
+	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName $node
 }
 
 # list all machines
 docker-machine ls
+
+
+
+## Creating Docker Swarm...
+echo "`n>>>>>>>>>> Building the docker swarm <<<<<<<<<<`n"
 echo "======> Initializing first swarm manager ..."
-$manager1ip = docker-machine ip manager1
+$managerZeroip = docker-machine ip $managerZero
 
-docker-machine ssh manager1 "docker swarm init --listen-addr $manager1ip --advertise-addr $manager1ip"
-docker-machine ssh manager1 "docker node update --label-add danir2.machine.role=manager manager1"
+docker-machine ssh $managerZero "docker swarm init --listen-addr $managerZeroip --advertise-addr $managerZeroip"
+docker-machine ssh $managerZero "docker node update --label-add role=spark_master $managerZero"
 
-# get manager and worker tokens
-$managertoken = docker-machine ssh manager1 "docker swarm join-token manager -q"
-$workertoken = docker-machine ssh manager1 "docker swarm join-token worker -q"
 
 # other masters join swarm
-for ($node=2;$node -le $managers;$node++) {
-	echo "======> manager$node joining swarm as manager ..."
-	$nodeip = docker-machine ip manager$node
-	docker-machine ssh "manager$node" "docker swarm join --token $managertoken --listen-addr $nodeip --advertise-addr $nodeip $manager1ip"
-	docker-machine ssh manager1 "docker node update --label-add danir2.machine.role=worker manager$node"
+If ($managers.Length -gt 1) {
+    # get manager and worker tokens
+    $managertoken = docker-machine ssh $managerZero "docker swarm join-token manager -q"
+
+    Foreach ($node in $managers[1..($managers.Length-1)]) {
+        echo "======> $node joining swarm as manager ..."
+        $nodeip = docker-machine ip $node
+        docker-machine ssh "manager$node" "docker swarm join --token $managertoken --listen-addr $nodeip --advertise-addr $nodeip $managerZeroip"
+        docker-machine ssh $managerZero "docker node update --label-add role=spark_worker manager$node"
+    }
 }
-# show members of swarm
-docker-machine ssh manager1 "docker node ls"
+
 
 # workers join swarm
-for ($node=1;$node -le $workers;$node++) {
-	echo "======> worker$node joining swarm as worker ..."
-	$nodeip = docker-machine ip worker$node
-	docker-machine ssh "worker$node" "docker swarm join --token $workertoken --listen-addr $nodeip --advertise-addr $nodeip $manager1ip"
-	docker-machine ssh manager1 "docker node update --label-add danir2.machine.role=worker worker$node"
+# get worker token
+$workertoken = docker-machine ssh $managerZero "docker swarm join-token worker -q"
+
+Foreach ($node in $workers) {
+	echo "======> $node joining swarm as worker ..."
+	$nodeip = docker-machine ip $node
+	docker-machine ssh "worker$node" "docker swarm join --token $workertoken --listen-addr $nodeip --advertise-addr $nodeip $managerZeroip"
+	docker-machine ssh $managerZero "docker node update --label-add role=spark_worker $node"
 }
 
 # show members of swarm
-docker-machine ssh manager1 "docker node ls"
+docker-machine ssh $managerZero "docker node ls"
 
 
-# Prepare the node manager1:
-docker-machine ssh manager1 "mkdir app; mkdir data; mkdir results"
+
+## Services deployment
+
+# Prepare the node $managerZero:
+docker-machine ssh $managerZero "mkdir app; mkdir data; mkdir results"
 
 # Get the docker-stack.yml file from github:
-docker-machine ssh manager1 "wget $DockerStackFile --no-check-certificate --output-document docker-stack.yml"
+docker-machine ssh $managerZero "wget $DockerStackFile --no-check-certificate --output-document docker-stack.yml"
 
 # And deploy it:
-docker-machine ssh manager1 "docker stack deploy --compose-file docker-stack.yml $StackName"
+docker-machine ssh $managerZero "docker stack deploy --compose-file docker-stack.yml $StackName"
 # show the service
-docker-machine ssh manager1 "docker stack services $StackName"
+docker-machine ssh $managerZero "docker stack services $StackName"
 
 
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds
@@ -93,4 +108,4 @@ echo "======>"
 echo "======> The deployment took: $timeItTook seconds"
 
 echo "======>"
-echo "======> You can access to the web user interface of the spark master at: $manager1ip :8080"
+echo "======> You can access to the web user interface of the spark master at: $managerZeroip :8080"

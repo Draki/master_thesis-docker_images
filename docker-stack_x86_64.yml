@@ -30,7 +30,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.role == spark_manager
+          - node.labels.role == spark_master
     networks:
       thesisnet:
         aliases:

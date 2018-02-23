@@ -34,9 +34,7 @@ If ($rasPiManagers.Length -gt 1) {
 
 
 echo "$joinAsWorker"
-echo ""
-echo "======> Joining worker raspis to the swarm ..."
-echo ""
+echo "`n======> Joining worker raspis to the swarm ...`n"
 Foreach ($node in $rasPiWorkers) {
     echo "$node joining the swarm"
     WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call $joinAsWorker" "exit"
