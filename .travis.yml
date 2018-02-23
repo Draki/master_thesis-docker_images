@@ -13,14 +13,18 @@ env:
       VERSION=${JAVA_VERSION}_${HADOOP_VERSION}_${SPARK_VERSION}
   matrix:
     - ARCH=x86_64
-      DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
+      DOCKER_BUILD=anielrodriguez/docker-spark-debian
       DOCKERFILE=Dockerfile.x86_64
     - ARCH=rpi
-      DOCKER_BUILD=danielrodriguez/docker-spark-debian
+      DOCKER_BUILD=ddanielrodriguez/docker-spark-raspbian
       DOCKERFILE=Dockerfile.rpi
 
 script:
 # prepare qemu
+#- >
+#  if "$ARCH" == "rpi" ; then
+#    docker run --rm --privileged multiarch/qemu-user-static:register --reset
+#  fi
 - docker run --rm --privileged multiarch/qemu-user-static:register --reset
 # build image
 - docker build -t ${DOCKER_BUILD}:${VERSION} -f ${DOCKERFILE} .
