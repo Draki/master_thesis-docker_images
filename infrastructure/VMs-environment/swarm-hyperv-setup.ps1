@@ -39,7 +39,6 @@ Foreach ($node in $managers) {
 
 # create worker machines
 echo "======> Creating worker machines ..."
-for ($node=1;$node -le $workers;$node++) {
 Foreach ($node in $workers) {
 	echo "======> Creating $node machine ..."
 	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName $node
@@ -67,8 +66,8 @@ If ($managers.Length -gt 1) {
     Foreach ($node in $managers[1..($managers.Length-1)]) {
         echo "======> $node joining swarm as manager ..."
         $nodeip = docker-machine ip $node
-        docker-machine ssh "manager$node" "docker swarm join --token $managertoken --listen-addr $nodeip --advertise-addr $nodeip $managerZeroip"
-        docker-machine ssh $managerZero "docker node update --label-add role=spark_worker manager$node"
+        docker-machine ssh "$node" "docker swarm join --token $managertoken --listen-addr $nodeip --advertise-addr $nodeip $managerZeroip"
+        docker-machine ssh $managerZero "docker node update --label-add role=spark_worker $node"
     }
 }
 
@@ -80,7 +79,7 @@ $workertoken = docker-machine ssh $managerZero "docker swarm join-token worker -
 Foreach ($node in $workers) {
 	echo "======> $node joining swarm as worker ..."
 	$nodeip = docker-machine ip $node
-	docker-machine ssh "worker$node" "docker swarm join --token $workertoken --listen-addr $nodeip --advertise-addr $nodeip $managerZeroip"
+	docker-machine ssh "$node" "docker swarm join --token $workertoken --listen-addr $nodeip --advertise-addr $nodeip $managerZeroip"
 	docker-machine ssh $managerZero "docker node update --label-add role=spark_worker $node"
 }
 
