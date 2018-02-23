@@ -20,8 +20,6 @@ $DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_i
 $StackName="TheStackOfDani"
 
 
-$managers=1
-$workers=3
 $managers = @("node1")
 $workers = @("node2","node3","node4")
 $managerZero = $managers[0]
@@ -55,7 +53,7 @@ echo "======> Initializing first swarm manager ..."
 $managerZeroip = docker-machine ip $managerZero
 
 docker-machine ssh $managerZero "docker swarm init --listen-addr $managerZeroip --advertise-addr $managerZeroip"
-docker-machine ssh $managerZero "docker node update --label-add role=spark_master $managerZero"
+docker-machine ssh $managerZero "docker node update --label-add role=spark_master --label-add architecture=x86_64 $managerZero"
 
 
 # other masters join swarm
@@ -67,7 +65,7 @@ If ($managers.Length -gt 1) {
         echo "======> $node joining swarm as manager ..."
         $nodeip = docker-machine ip $node
         docker-machine ssh "$node" "docker swarm join --token $managertoken --listen-addr $nodeip --advertise-addr $nodeip $managerZeroip"
-        docker-machine ssh $managerZero "docker node update --label-add role=spark_worker $node"
+        docker-machine ssh $managerZero "docker node update --label-add role=spark_worker --label-add architecture=x86_64 $node"
     }
 }
 
@@ -80,7 +78,7 @@ Foreach ($node in $workers) {
 	echo "======> $node joining swarm as worker ..."
 	$nodeip = docker-machine ip $node
 	docker-machine ssh "$node" "docker swarm join --token $workertoken --listen-addr $nodeip --advertise-addr $nodeip $managerZeroip"
-	docker-machine ssh $managerZero "docker node update --label-add role=spark_worker $node"
+	docker-machine ssh $managerZero "docker node update --label-add role=spark_worker --label-add architecture=x86_64 $node"
 }
 
 # show members of swarm

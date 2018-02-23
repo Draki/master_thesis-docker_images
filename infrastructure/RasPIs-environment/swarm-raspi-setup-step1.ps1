@@ -17,7 +17,7 @@ $managerZero = $rasPiManagers[0]
 
 echo "======> Initializing the original swarm manager in node1 ..."         # And storing the command to join as a worker node
 $joinAsWorker = (WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" "call docker swarm init" "exit" | Select-String -Pattern 'docker swarm join --token').Line.trim()
-$labels = """call docker node update --label-add role=spark_master node1"""
+$labels = """call docker node update --label-add role=spark_master --label-add architecture=rpi node1"""
 
 # In case we got additional managers:
 If ($rasPiManagers.Length -gt 1) {
@@ -28,7 +28,7 @@ If ($rasPiManagers.Length -gt 1) {
     Foreach ($node in $rasPiManagers[1..($rasPiManagers.Length-1)]) {
         echo "Master node '$node' joining the swarm"
         WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call $joinAsManager" "exit"
-        $labels += " ""call docker node update --label-add role=spark_worker $node"""
+        $labels += " ""call docker node update --label-add role=spark_worker --label-add architecture=rpi $node"""
     }
 }
 
@@ -38,7 +38,7 @@ echo "`n======> Joining worker raspis to the swarm ...`n"
 Foreach ($node in $rasPiWorkers) {
     echo "$node joining the swarm"
     WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call $joinAsWorker" "exit"
-    $labels += " ""call docker node update --label-add role=spark_worker $node"""
+    $labels += " ""call docker node update --label-add role=spark_worker --label-add architecture=rpi $node"""
 }
 
 # Label all nodes with their roles
