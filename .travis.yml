@@ -25,15 +25,9 @@ env:
 #  - sudo apt-get update
 #  - sudo apt-get -y install docker-ce
 script:
-#- echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
-#- sudo service docker restart
+- echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
+- sudo service docker restart
 # prepare qemu
-- set -e
-- docker version
-- uname -a
-- echo "Updating Docker engine to 17.05.0"
-- sudo service docker stop
-- curl -fsSL https://get.docker.com/ | sudo sh
 - docker version
 - >
   if "$ARCH" != "amd64" ; then
@@ -56,4 +50,11 @@ script:
     docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
     docker tag ${DOCKER_BUILD}:${VERSION} ${DOCKER_BUILD}:$TRAVIS_BRANCH
     docker push ${DOCKER_BUILD}:$TRAVIS_BRANCH
+  fi
+
+- >
+  if "$ARCH" != "amd64" ; then
+    docker manifest create ${DOCKER_BUILD}:$TRAVIS_BRANCH
+    docker manifest annotate ${DOCKER_BUILD}:$TRAVIS_BRANCH --arch $ARCH
+    docker manifest push ${DOCKER_BUILD}:$TRAVIS_BRANCH
   fi
