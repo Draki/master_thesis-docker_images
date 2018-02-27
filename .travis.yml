@@ -2,6 +2,9 @@ sudo: required
 
 language: bash
 
+services:
+- docker
+
 env:
   global:
     - JAVA_VERSION=jdk1.8.131
