@@ -1,9 +1,9 @@
 sudo: required
 
-language: bash
-
 services:
 - docker
+
+language: bash
 
 env:
   global:
@@ -15,27 +15,19 @@ env:
     - ARCH=amd64
       DOCKER_BUILD=danielrodriguez/docker-spark-debian
       DOCKERFILE=Dockerfile.x86_64
-    - ARCH=armv7l
-      DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
-      DOCKERFILE=Dockerfile.rpi
     - ARCH=arm
       DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
       DOCKERFILE=Dockerfile.rpi
 
-#before_install:
-#  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-#  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable edge"
-#  - sudo apt-get update
-#  - sudo apt-get -y install docker-ce
 script:
 # prepare qemu
 - >
   if "$ARCH" != "amd64" ; then
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
   fi
+- docker version
 # build image
 - docker build -t ${DOCKER_BUILD}:${VERSION} -f ${DOCKERFILE} .
-#- docker build -t ${DOCKER_BUILD}:${VERSION} -f ${DOCKERFILE} --platform $ARCH .
 # test image
 - docker run --rm ${DOCKER_BUILD}:${VERSION} /bin/echo "Success."
 #- docker run --rm ${DOCKER_BUILD}:${VERSION} spark-shell --version
