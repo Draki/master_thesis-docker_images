@@ -31,7 +31,7 @@ script:
 - sudo service docker restart
 # prepare qemu
 - >
-  if "$ARCH" == "armv7l" ; then
+  if "$ARCH" != "amd64" ; then
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
   fi
 # build image
