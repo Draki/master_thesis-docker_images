@@ -27,7 +27,7 @@ script:
 #  fi
 - docker run --rm --privileged multiarch/qemu-user-static:register --reset
 # build image
-- docker build -t ${DOCKER_BUILD}:${VERSION} -f ${DOCKERFILE} .
+- docker build -t ${DOCKER_BUILD}:${VERSION} -f ${DOCKERFILE} --platform $ARCH .
 # test image
 - docker run --rm ${DOCKER_BUILD}:${VERSION} /bin/echo "Success."
 #- docker run --rm ${DOCKER_BUILD}:${VERSION} spark-shell --version

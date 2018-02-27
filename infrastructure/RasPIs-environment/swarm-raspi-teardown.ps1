@@ -27,6 +27,7 @@ Foreach ($node in $managers) {
     WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call docker swarm leave --force" "exit"
 }
 echo "======>Leader node '$leader' leaving the swarm"
+WinSCP.com /command "open sftp://pirate:hypriot@$leader/ -hostkey=*" "call rm -R ./*" "exit"
 WinSCP.com /command "open sftp://pirate:hypriot@$leader/ -hostkey=*" "call docker swarm leave --force" "exit"
 
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds

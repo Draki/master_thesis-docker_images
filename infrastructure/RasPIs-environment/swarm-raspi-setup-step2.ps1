@@ -1,17 +1,17 @@
 # From:  https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/
 # Modified by: Daniel Rodriguez Rodriguez
 #
-# At the Hyper-V Manager app on Windows, under "ethernet adapter", create a Virtual Switch (as an "external network") called:
-$SwitchName = "DockerNAT"
-# Run from PowerShell console as Administrator with the command:
-#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesisB\infrastructure\RasPIs-environment\docker-machine-pcmanager-raspis\swarm-raspi-setup-step2.ps1
 # Swarm mode using raspberryPIes
+#
+# Run from PowerShell console as Administrator with the command:
+#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\RasPIs-environment\swarm-raspi-setup-step2.ps1
+
 
 
 # Current development github branch
 $GithubBranch="infrastructure_deployment"
 
-# Pointer to the stack-descriptor file
+# Pointer to the stack-descriptor filepowershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\RasPIs-environment\swarm-raspi-setup-step2.ps1
 $DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_rpi.yml"
 
 
@@ -25,34 +25,40 @@ $StackName="TheStackOfDani"
 
 
 
-
-
-WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" "call docker node ls" "exit"
-
-
 $fromNow = Get-Date
 
-# list all machines
-docker-machine ls
 
 # show members of swarm
-$dockerCommand = "docker node ls"
-WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" "call $dockerCommand" "exit"
+$dockerCommand = @("docker node ls")
+
+
+for ($i=0; $i -lt $dockerCommand.Count; $i++) {
+    $dockerCommand[$i] = "call " + $dockerCommand[$i]
+}
+WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" $dockerCommand "exit"
+
+
 
 
 # Prepare the node manager:
-$dockerCommand = "mkdir app; mkdir data; mkdir results"
+$dockerCommand = @("mkdir app; mkdir data; mkdir results")
 
 # Get the docker-stack.yml file from github:
-$dockerCommand2 = "wget $DockerStackFile --no-check-certificate --output-document docker-stack.yml"
+$dockerCommand += "wget $DockerStackFile --no-check-certificate --output-document docker-stack.yml 2> /dev/null"
 
 # And deploy it:
-$dockerCommand3 = "docker stack deploy --compose-file docker-stack.yml $StackName"
+$dockerCommand += "docker stack deploy --compose-file docker-stack.yml --resolve-image never $StackName"
 
 # show the service
-$dockerCommand4 = "docker stack services $StackName"
+$dockerCommand += "docker stack services $StackName"
 
-WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" "call $dockerCommand1" "call $dockerCommand2" "call $dockerCommand3" "call $dockerCommand4" "exit"
+
+for ($i=0; $i -lt $dockerCommand.Count; $i++) {
+    $dockerCommand[$i] = "call " + $dockerCommand[$i]
+}
+WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" $dockerCommand "exit"
+
+
 
 
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds
@@ -60,5 +66,4 @@ echo "======>"
 echo "======> The deployment took: $timeItTook seconds"
 
 echo "======>"
-$managerIp = docker-machine ip manager
-echo "======> You can access to the web user interface of the spark master at: $managerIp :8080"
+echo "======> You can access to the web user interface of the spark master at: ($managerZero):8080"
