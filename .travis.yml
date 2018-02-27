@@ -1,10 +1,7 @@
 sudo: required
-
 services:
 - docker
-
 language: bash
-
 env:
   global:
     - JAVA_VERSION=jdk1.8.131
@@ -22,7 +19,7 @@ env:
 script:
 # prepare qemu
 - >
-  if "$ARCH" != "amd64" ; then
+  if [ "$ARCH" != "amd64" ]; then
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
   fi
 - docker version
@@ -45,7 +42,7 @@ script:
   fi
 
 - >
-  if "$ARCH" != "amd64" ; then
+  if[ "$ARCH" != "amd64" ]; then
     echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
     sudo service docker restart
     docker version
