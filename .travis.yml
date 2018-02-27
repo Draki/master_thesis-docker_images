@@ -28,10 +28,7 @@ env:
 #  - sudo apt-get update
 #  - sudo apt-get -y install docker-ce
 script:
-- echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
-- sudo service docker restart
 # prepare qemu
-- docker version
 - >
   if "$ARCH" != "amd64" ; then
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
@@ -57,6 +54,9 @@ script:
 
 - >
   if "$ARCH" != "amd64" ; then
+    echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
+    sudo service docker restart
+    docker version
     docker manifest create ${DOCKER_BUILD}:$TRAVIS_BRANCH
     docker manifest annotate ${DOCKER_BUILD}:$TRAVIS_BRANCH --arch $ARCH
     docker manifest push ${DOCKER_BUILD}:$TRAVIS_BRANCH
