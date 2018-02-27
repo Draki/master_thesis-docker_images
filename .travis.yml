@@ -12,10 +12,13 @@ env:
       SPARK_VERSION=spark-2.2.1
       VERSION=${JAVA_VERSION}_${HADOOP_VERSION}_${SPARK_VERSION}
   matrix:
-    - ARCH=x86_64
+    - ARCH=amd64
       DOCKER_BUILD=danielrodriguez/docker-spark-debian
       DOCKERFILE=Dockerfile.x86_64
-    - ARCH=armv7l
+    - ARCH=arm
+      DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
+      DOCKERFILE=Dockerfile.rpi
+    - ARCH=arm32v7
       DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
       DOCKERFILE=Dockerfile.rpi
 before_install:
