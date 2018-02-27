@@ -32,18 +32,18 @@ env:
       DOCKERFILE=Dockerfile.rpi
 
 before_install:
-#  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-#  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable edge"
-#  - sudo apt-get update
-#  - sudo apt-get -y install docker-ce
-set -e
-
-docker version
-uname -a
-echo "Updating Docker engine to 17.05.0"
-sudo service docker stop
-curl -fsSL https://get.docker.com/ | sudo sh
-docker version
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable edge"
+  - sudo apt-get update
+  - sudo apt-get -y install docker-ce
+#set -e
+#
+#docker version
+#uname -a
+#echo "Updating Docker engine to 17.05.0"
+#sudo service docker stop
+#curl -fsSL https://get.docker.com/ | sudo sh
+#docker version
 script:
 - echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
 - sudo service docker restart
