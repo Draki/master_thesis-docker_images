@@ -12,48 +12,36 @@ env:
       SPARK_VERSION=spark-2.2.1
       VERSION=${JAVA_VERSION}_${HADOOP_VERSION}_${SPARK_VERSION}
   matrix:
-    - ARCH=linux/amd64
+    - ARCH=amd64
       DOCKER_BUILD=danielrodriguez/docker-spark-debian
       DOCKERFILE=Dockerfile.x86_64
-    - ARCH=linux/arm
-      DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
-      DOCKERFILE=Dockerfile.rpi
-    - ARCH=linux/armhf
-      DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
-      DOCKERFILE=Dockerfile.rpi
-    - ARCH=linux/armv7l
-      DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
-      DOCKERFILE=Dockerfile.rpi
-    - ARCH=linux/armv7hf
-      DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
-      DOCKERFILE=Dockerfile.rpi
-    - ARCH=linux/arm32v7
+    - ARCH=armv7l
       DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
       DOCKERFILE=Dockerfile.rpi
 
 before_install:
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable edge"
-  - sudo apt-get update
-  - sudo apt-get -y install docker-ce
-#set -e
-#
-#docker version
-#uname -a
-#echo "Updating Docker engine to 17.05.0"
-#sudo service docker stop
-#curl -fsSL https://get.docker.com/ | sudo sh
-#docker version
+#  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+#  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable edge"
+#  - sudo apt-get update
+#  - sudo apt-get -y install docker-ce
+- set -e
+- docker version
+- uname -a
+- echo "Updating Docker engine to 17.05.0"
+- sudo service docker stop
+- curl -fsSL https://get.docker.com/ | sudo sh
+- docker version
 script:
-- echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
-- sudo service docker restart
+#- echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
+#- sudo service docker restart
 # prepare qemu
 - >
   if "$ARCH" != "amd64" ; then
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
   fi
 # build image
-- docker build -t ${DOCKER_BUILD}:${VERSION} -f ${DOCKERFILE} --platform $ARCH .
+- docker build -t ${DOCKER_BUILD}:${VERSION} -f ${DOCKERFILE} .
+#- docker build -t ${DOCKER_BUILD}:${VERSION} -f ${DOCKERFILE} --platform $ARCH .
 # test image
 - docker run --rm ${DOCKER_BUILD}:${VERSION} /bin/echo "Success."
 #- docker run --rm ${DOCKER_BUILD}:${VERSION} spark-shell --version
