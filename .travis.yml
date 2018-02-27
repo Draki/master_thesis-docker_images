@@ -15,10 +15,7 @@ env:
     - ARCH=amd64
       DOCKER_BUILD=danielrodriguez/docker-spark-debian
       DOCKERFILE=Dockerfile.x86_64
-    - ARCH=arm
-      DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
-      DOCKERFILE=Dockerfile.rpi
-    - ARCH=arm32v7
+    - ARCH=armhf
       DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
       DOCKERFILE=Dockerfile.rpi
 before_install:
