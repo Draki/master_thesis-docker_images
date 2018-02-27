@@ -41,12 +41,9 @@ script:
     docker push ${DOCKER_BUILD}:$TRAVIS_BRANCH
   fi
 
-- >
-  if[ "$ARCH" != "amd64" ]; then
-    echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
-    sudo service docker restart
-    docker version
-    docker manifest create ${DOCKER_BUILD}:$TRAVIS_BRANCH
-    docker manifest annotate ${DOCKER_BUILD}:$TRAVIS_BRANCH --arch $ARCH
-    docker manifest push ${DOCKER_BUILD}:$TRAVIS_BRANCH
-  fi
+- echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
+- sudo service docker restart
+- docker version
+- docker manifest create ${DOCKER_BUILD}:$TRAVIS_BRANCH
+- docker manifest annotate ${DOCKER_BUILD}:$TRAVIS_BRANCH --arch $ARCH
+- docker manifest push ${DOCKER_BUILD}:$TRAVIS_BRANCH
