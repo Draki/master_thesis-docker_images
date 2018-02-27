@@ -22,11 +22,15 @@ env:
       DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
       DOCKERFILE=Dockerfile.rpi
 
-before_install:
+#before_install:
 #  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 #  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable edge"
 #  - sudo apt-get update
 #  - sudo apt-get -y install docker-ce
+script:
+#- echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
+#- sudo service docker restart
+# prepare qemu
 - set -e
 - docker version
 - uname -a
@@ -34,10 +38,6 @@ before_install:
 - sudo service docker stop
 - curl -fsSL https://get.docker.com/ | sudo sh
 - docker version
-script:
-#- echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
-#- sudo service docker restart
-# prepare qemu
 - >
   if "$ARCH" != "amd64" ; then
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
