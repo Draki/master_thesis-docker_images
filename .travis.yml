@@ -19,10 +19,10 @@ env:
       DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
       DOCKERFILE=Dockerfile.rpi
 script:
+- echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
+- sudo service docker restart
 # prepare qemu
 - >
-  echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
-  sudo service docker restart
   if "$ARCH" == "armv7l" ; then
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
   fi
