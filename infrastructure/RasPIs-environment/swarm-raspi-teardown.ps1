@@ -33,3 +33,9 @@ WinSCP.com /command "open sftp://pirate:hypriot@$leader/ -hostkey=*" "call docke
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds
 echo "======>"
 echo "======> The cleaning took: $timeItTook seconds"
+
+##!/bin/bash
+## Delete all containers
+#docker rm $(docker ps -a -q)
+## Delete all images
+#docker rmi $(docker images -q)

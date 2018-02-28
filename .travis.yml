@@ -16,7 +16,12 @@ env:
     - ARCH=arm
       DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
       DOCKERFILE=Dockerfile.rpi
-
+before_install:
+- docker version
+- sudo apt-cache madison docker-ce
+- sudo apt-get install docker-ce=17.05.0~ce-0~debian-jessie
+- sudo service docker restart
+- docker version
 script:
 # prepare qemu
 - >
