@@ -1,5 +1,5 @@
 # Run from PowerShell console as Administrator with the command:
-#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\RasPIs-environment\swarm-only_raspi-teardown.ps1
+#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\RasPIs-environment\swarm-raspi-teardown.ps1
 
 $rasPiManager = "node1"
 
@@ -18,20 +18,20 @@ $workers = ($swarm -match "node\d\s+Ready\s+Active(?!\s+[Leader|Reachable])")  -
 
 
 Foreach ($node in $workers) {
-    echo "======>Worker node '$node' leaving the swarm"
+    echo "`n`n======>Worker node '$node' leaving the swarm"
     WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call docker swarm leave" "exit"
 }
 
 Foreach ($node in $managers) {
-    echo "======>Manager node '$node' leaving the swarm"
+    echo "`n`n======>Manager node '$node' leaving the swarm"
     WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call docker swarm leave --force" "exit"
 }
-echo "======>Leader node '$leader' leaving the swarm"
+echo "`n`n======>Leader node '$leader' leaving the swarm"
 WinSCP.com /command "open sftp://pirate:hypriot@$leader/ -hostkey=*" "call rm -R ./*" "exit"
 WinSCP.com /command "open sftp://pirate:hypriot@$leader/ -hostkey=*" "call docker swarm leave --force" "exit"
 
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds
-echo "======>"
+echo "`n`n======>"
 echo "======> The cleaning took: $timeItTook seconds"
 
 ##!/bin/bash

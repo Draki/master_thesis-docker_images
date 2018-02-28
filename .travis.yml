@@ -15,21 +15,21 @@ env:
     - ARCH=arm
       DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
       DOCKERFILE=Dockerfile.rpi
-before_install:
-- echo "Installing docker engine"
-- sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-$(lsb_release -cs) main" > /etc/apt/sources.list.d/docker.list'
-- curl -fsSL https://apt.dockerproject.org/gpg | sudo apt-key add -
-- sudo apt-key fingerprint 58118E89F3A912897C070ADBF76221572C52609D
-- sudo apt-get update
-- sudo apt-get -y install "docker-engine=17.05.0~ce-0~ubuntu-$(lsb_release -cs)"
-- docker --version
+#before_install:
+#- echo "Installing docker engine"
+#- sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-$(lsb_release -cs) main" > /etc/apt/sources.list.d/docker.list'
+#- curl -fsSL https://apt.dockerproject.org/gpg | sudo apt-key add -
+#- sudo apt-key fingerprint 58118E89F3A912897C070ADBF76221572C52609D
+#- sudo apt-get update
+#- sudo apt-get -y install "docker-engine=17.05.0~ce-0~ubuntu-$(lsb_release -cs)"
+#- docker --version
 script:
 # prepare qemu
+- docker version
 - >
   if [ "$ARCH" != "amd64" ]; then
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
   fi
-- docker version
 # build image
 - docker build -t ${DOCKER_BUILD}:${VERSION} -f ${DOCKERFILE} .
 # test image
@@ -47,10 +47,3 @@ script:
     docker tag ${DOCKER_BUILD}:${VERSION} ${DOCKER_BUILD}:$TRAVIS_BRANCH
     docker push ${DOCKER_BUILD}:$TRAVIS_BRANCH
   fi
-
-#- echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
-#- sudo service docker restart
-#- docker version
-#- docker manifest create ${DOCKER_BUILD}:$TRAVIS_BRANCH
-#- docker manifest annotate ${DOCKER_BUILD}:$TRAVIS_BRANCH --arch $ARCH
-#- docker manifest push ${DOCKER_BUILD}:$TRAVIS_BRANCH
