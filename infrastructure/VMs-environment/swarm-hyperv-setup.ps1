@@ -1,33 +1,28 @@
-# From:  https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/
-# Modified by: Daniel Rodriguez Rodriguez
+# Swarm mode using Docker Machine
+# Created by: Daniel Rodriguez Rodriguez
 #
 # At the Hyper-V Manager app on Windows, under "ethernet adapter", create a Virtual Switch (as an "external network") called:
 $SwitchName = "virtualPFC"
-# Run from PowerShell console as Administrator with the command:
-#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\VMs-environment\swarm-hyperv-setup.ps1
-
-# Swarm mode using Docker Machine
-
-
 # Current development github branch
 $GithubBranch="infrastructure_deployment"
-
 # Pointer to the stack-descriptor file
 $DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_x86_64.yml"
+#
+# Run from PowerShell console as Administrator with the command:
+#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\VMs-environment\swarm-hyperv-setup.ps1
 
 
 # Chose a name for the stack, number of manager machines and number of worker machines
 $StackName="TheStackOfDani"
-
-
-$managers = @("node1")
-$workers = @("node2","node3","node4")
-$managerZero = $managers[0]
+$managers = @("vm_node1")
+$workers = @("vm_node2","vm_node3","vm_node4")
 
 
 ## Creating virtual machines...
 echo "`n>>>>>>>>>> Creating virtual machines <<<<<<<<<<`n"
 $fromNow = Get-Date
+$managerZero = $managers[0]
+
 # create manager machines
 echo "======> Creating manager machines ..."
 Foreach ($node in $managers) {
