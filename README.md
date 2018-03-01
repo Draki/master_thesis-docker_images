@@ -2,10 +2,10 @@
 
 Work finished:
     
-    · Infrastructure:
+    · Infrastructure & Deployment (unified infrastructure creation and service deployment):
         - VMs setup
         - VMs teardown
-        - Hibrid setup1
+        - Hibrid setup
         - Hibrid teardown
         - Rpi setup
         - Rpi teardown    
@@ -13,19 +13,9 @@ Work finished:
         - amd64
         - Rpi
     · Continuous Integration
-        - Travis rpi
-        - Travis amd64
+        - Travis (unified rpi & amd64)
     · Docker-stack
         - VMs
-        - Rpi
-    · Deployment:
-        - VMs setup2
-        
-        
-Work in progress:
-
-    · Docker-stack
         - Hibrid
-    · Deployment:
-        - Hibrid setup2
+        - Rpi
         

@@ -4,7 +4,7 @@
 # Current development github branch
 $GithubBranch="master"
 # Pointer to the stack-descriptor file
-$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_rpi.yml"
+$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/infrastructure/RasPIs-environment/docker-stack_rpi.yml"
 #
 # Run from PowerShell console as Administrator with the command:
 #   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\RasPIs-environment\swarm-raspi-setup-step.ps1

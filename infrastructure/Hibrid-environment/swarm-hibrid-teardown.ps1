@@ -1,8 +1,8 @@
 # Run from PowerShell console as Administrator with the command:
-#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesisB\infrastructure\RasPIs-environment\docker-machine-pcmanager-raspis\swarm-raspi-teardown.ps1
+#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\Hibrid-environment\swarm-hibrid-teardown.ps1
 
 $fromNow = Get-Date
-$manager = vm_node1
+$manager = "vmNode1"
 #$rasPiWorkers = 4
 
 
@@ -32,7 +32,6 @@ Foreach ($node in $workers) {
 #docker-machine ssh $manager "docker swarm leave --force"
 docker-machine stop $manager
 docker-machine rm --force $manager
-
 
 
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds

@@ -6,7 +6,7 @@ $SwitchName = "virtualPFC"
 # Current development github branch
 $GithubBranch="master"
 # Pointer to the stack-descriptor file
-$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_x86_64.yml"
+$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/infrastructure/VMs-environment/docker-stack_x86_64.yml"
 #
 # Run from PowerShell console as Administrator with the command:
 #   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\VMs-environment\swarm-hyperv-setup.ps1
