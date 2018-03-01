@@ -3,11 +3,11 @@
 Work finished:
     
     · Infrastructure:
-        - VMs setup1
+        - VMs setup
         - VMs teardown
         - Hibrid setup1
         - Hibrid teardown
-        - Rpi setup1
+        - Rpi setup
         - Rpi teardown    
     · Dockerfiles
         - amd64
@@ -17,18 +17,15 @@ Work finished:
         - Travis amd64
     · Docker-stack
         - VMs
+        - Rpi
     · Deployment:
         - VMs setup2
         
         
 Work in progress:
 
-    · Infrastructure:
-        - Docker labels
     · Docker-stack
         - Hibrid
-        - Rpi
     · Deployment:
         - Hibrid setup2
-        - Rpi setup2
         
