@@ -1,32 +1,38 @@
 sudo: required
-
 services:
 - docker
-
 language: bash
-
 env:
   global:
     - JAVA_VERSION=jdk1.8.131
       HADOOP_VERSION=hadoop-2.7.3
       SPARK_VERSION=spark-2.2.1
-      VERSION=${JAVA_VERSION}_${HADOOP_VERSION}_${SPARK_VERSION}_build${TRAVIS_BUILD_NUMBER}
+      VERSION=${JAVA_VERSION}_${HADOOP_VERSION}_${SPARK_VERSION}
   matrix:
-    - ARCH=x86_64
-      DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
-      DOCKERFILE=Dockerfile.amd64
-    - ARCH=rpi
+    - ARCH=amd64
       DOCKER_BUILD=danielrodriguez/docker-spark-debian
+      DOCKERFILE=Dockerfile.x86_64
+    - ARCH=arm
+      DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
       DOCKERFILE=Dockerfile.rpi
-
+#before_install:
+#- echo "Installing docker engine"
+#- sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-$(lsb_release -cs) main" > /etc/apt/sources.list.d/docker.list'
+#- curl -fsSL https://apt.dockerproject.org/gpg | sudo apt-key add -
+#- sudo apt-key fingerprint 58118E89F3A912897C070ADBF76221572C52609D
+#- sudo apt-get update
+#- sudo apt-get -y install "docker-engine=17.05.0~ce-0~ubuntu-$(lsb_release -cs)"
+#- docker --version
 script:
 # prepare qemu
-- docker run --rm --privileged multiarch/qemu-user-static:register --reset
+- >
+  if [ "$ARCH" != "amd64" ]; then
+    docker run --rm --privileged multiarch/qemu-user-static:register --reset
+  fi
 # build image
 - docker build -t ${DOCKER_BUILD}:${VERSION} -f ${DOCKERFILE} .
 # test image
 - docker run --rm ${DOCKER_BUILD}:${VERSION} /bin/echo "Success."
-#- docker run --rm ${DOCKER_BUILD}:${VERSION} spark-shell --version
 # push image
 - >
   if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
@@ -37,5 +43,5 @@ script:
   elif [ "$TRAVIS_BRANCH" != "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
     docker tag ${DOCKER_BUILD}:${VERSION} ${DOCKER_BUILD}:$TRAVIS_BRANCH
-    docker push ${DOCKER_BUILD}
+    docker push ${DOCKER_BUILD}:$TRAVIS_BRANCH
   fi

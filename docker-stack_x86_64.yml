@@ -3,7 +3,7 @@ version: '3.4'
 services:
 
   spark-master:
-    image: danielrodriguez/distributed-spark-proof:threedirs
+    image: danielrodriguez/docker-spark-debian:infrastructure_deployment
     command: bin/spark-class org.apache.spark.deploy.master.Master -h spark-master
     hostname: spark-master
     environment:
@@ -29,14 +29,16 @@ services:
         target: /usr/spark-2.2.0/results
     deploy:
       placement:
-        constraints: [engine.labels.danir2.machine.role == manager]
+        constraints:
+          - node.labels.role == spark_master
+          - node.labels.architecture == x86_64
     networks:
       thesisnet:
         aliases:
           - spark-master
 
   spark-worker:
-    image: danielrodriguez/distributed-spark-proof
+    image: danielrodriguez/docker-spark-debian:infrastructure_deployment
     command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
     hostname: spark-worker
     environment:
@@ -52,7 +54,9 @@ services:
       mode: replicated
       replicas: 3
       placement:
-        constraints: [engine.labels.danir2.machine.role == worker]
+        constraints:
+          - node.labels.role == spark_worker
+          - node.labels.architecture == x86_64
       restart_policy:
         condition: on-failure
     networks:

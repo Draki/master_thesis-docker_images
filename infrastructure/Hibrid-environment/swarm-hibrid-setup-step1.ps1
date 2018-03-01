@@ -14,7 +14,7 @@ $fromNow = Get-Date
 
 # create manager machine
 echo "======> Creating manager machine ..."
-docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --engine-label danir2.machine.role=manager manager
+docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName manager
 
 
 # list all machines

@@ -1,85 +1,98 @@
-# From:  https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/
-# Modified by: Daniel Rodriguez Rodriguez
+# Swarm mode using Docker Machine
+# Created by: Daniel Rodriguez Rodriguez
 #
 # At the Hyper-V Manager app on Windows, under "ethernet adapter", create a Virtual Switch (as an "external network") called:
 $SwitchName = "virtualPFC"
+# Current development github branch
+$GithubBranch="infrastructure_deployment"
+# Pointer to the stack-descriptor file
+$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_x86_64.yml"
+#
 # Run from PowerShell console as Administrator with the command:
-#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesisB\infrastructure\VMs-environment\docker-machine-VMs\swarm-node-hyperv-setup.ps1
-
-# Swarm mode using Docker Machine
+#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\VMs-environment\swarm-hyperv-setup.ps1
 
 
 # Chose a name for the stack, number of manager machines and number of worker machines
 $StackName="TheStackOfDani"
-
-$managers=1
-$workers=3
-
-# Current development github branch
-$GithubBranch="master"
-
-# Pointer to the stack-descriptor file
-$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_amd64.yml"
+$managers = @("vm_node1")
+$workers = @("vm_node2","vm_node3","vm_node4")
 
 
-
+## Creating virtual machines...
+echo "`n>>>>>>>>>> Creating virtual machines <<<<<<<<<<`n"
 $fromNow = Get-Date
+$managerZero = $managers[0]
 
 # create manager machines
 echo "======> Creating manager machines ..."
-for ($node=1;$node -le $managers;$node++) {
-	echo "======> Creating manager$node machine ..."
-	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --engine-label danir2.machine.role=manager ('manager'+$node)
+Foreach ($node in $managers) {
+	echo "======> Creating $node machine ..."
+	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName $node
 }
 
 # create worker machines
 echo "======> Creating worker machines ..."
-for ($node=1;$node -le $workers;$node++) {
-	echo "======> Creating worker$node machine ..."
-	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --engine-label danir2.machine.role=worker ('worker'+$node)
+Foreach ($node in $workers) {
+	echo "======> Creating $node machine ..."
+	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName $node
 }
 
 # list all machines
 docker-machine ls
+
+
+
+## Creating Docker Swarm...
+echo "`n>>>>>>>>>> Building the docker swarm <<<<<<<<<<`n"
 echo "======> Initializing first swarm manager ..."
-$manager1ip = docker-machine ip manager1
+$managerZeroip = docker-machine ip $managerZero
 
-docker-machine ssh manager1 "docker swarm init --listen-addr $manager1ip --advertise-addr $manager1ip"
+docker-machine ssh $managerZero "docker swarm init --listen-addr $managerZeroip --advertise-addr $managerZeroip"
+docker-machine ssh $managerZero "docker node update --label-add role=spark_master --label-add architecture=x86_64 $managerZero"
 
-# get manager and worker tokens
-$managertoken = docker-machine ssh manager1 "docker swarm join-token manager -q"
-$workertoken = docker-machine ssh manager1 "docker swarm join-token worker -q"
 
 # other masters join swarm
-for ($node=2;$node -le $managers;$node++) {
-	echo "======> manager$node joining swarm as manager ..."
-	$nodeip = docker-machine ip manager$node
-	docker-machine ssh "manager$node" "docker swarm join --token $managertoken --listen-addr $nodeip --advertise-addr $nodeip $manager1ip"
+If ($managers.Length -gt 1) {
+    # get manager and worker tokens
+    $managertoken = docker-machine ssh $managerZero "docker swarm join-token manager -q"
+
+    Foreach ($node in $managers[1..($managers.Length-1)]) {
+        echo "======> $node joining swarm as manager ..."
+        $nodeip = docker-machine ip $node
+        docker-machine ssh "$node" "docker swarm join --token $managertoken --listen-addr $nodeip --advertise-addr $nodeip $managerZeroip"
+        docker-machine ssh $managerZero "docker node update --label-add role=spark_worker --label-add architecture=x86_64 $node"
+    }
 }
-# show members of swarm
-docker-machine ssh manager1 "docker node ls"
+
 
 # workers join swarm
-for ($node=1;$node -le $workers;$node++) {
-	echo "======> worker$node joining swarm as worker ..."
-	$nodeip = docker-machine ip worker$node
-	docker-machine ssh "worker$node" "docker swarm join --token $workertoken --listen-addr $nodeip --advertise-addr $nodeip $manager1ip"
+# get worker token
+$workertoken = docker-machine ssh $managerZero "docker swarm join-token worker -q"
+
+Foreach ($node in $workers) {
+	echo "======> $node joining swarm as worker ..."
+	$nodeip = docker-machine ip $node
+	docker-machine ssh "$node" "docker swarm join --token $workertoken --listen-addr $nodeip --advertise-addr $nodeip $managerZeroip"
+	docker-machine ssh $managerZero "docker node update --label-add role=spark_worker --label-add architecture=x86_64 $node"
 }
 
 # show members of swarm
-docker-machine ssh manager1 "docker node ls"
+docker-machine ssh $managerZero "docker node ls"
 
 
-# Prepare the node manager1:
-docker-machine ssh manager1 "mkdir app; mkdir data; mkdir results"
+
+## Services deployment
+
+# Prepare the node $managerZero:
+docker-machine ssh $managerZero "mkdir app; mkdir data; mkdir results"
 
 # Get the docker-stack.yml file from github:
-docker-machine ssh manager1 "wget $DockerStackFile --no-check-certificate --output-document docker-stack.yml"
+docker-machine ssh $managerZero "wget $DockerStackFile --no-check-certificate --output-document docker-stack.yml"
 
 # And deploy it:
-docker-machine ssh manager1 "docker stack deploy --compose-file docker-stack.yml $StackName"
+docker-machine ssh $managerZero "docker stack deploy --compose-file docker-stack.yml $StackName"
 # show the service
-docker-machine ssh manager1 "docker stack services $StackName"
+docker-machine ssh $managerZero "docker stack services $StackName"
 
 
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds
@@ -87,4 +100,4 @@ echo "======>"
 echo "======> The deployment took: $timeItTook seconds"
 
 echo "======>"
-echo "======> You can access to the web user interface of the spark master at: $manager1ip :8080"
+echo "======> You can access to the web user interface of the spark master at: $managerZeroip :8080"

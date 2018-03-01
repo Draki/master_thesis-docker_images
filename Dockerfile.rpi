@@ -1,5 +1,7 @@
 FROM resin/rpi-raspbian:jessie
-MAINTAINER Resin.io "https://github.com/resin-io-library/resin-rpi-raspbian"
+MAINTAINER DaniR2 "https://github.com/Draki/master_thesis-docker_images"
+
+LABEL danir2.architecture="rpi"
 
 RUN apt-get update \
  && apt-get install -y locales \
