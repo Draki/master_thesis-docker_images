@@ -3,12 +3,12 @@
 
 $rasPiManager = "node1"
 
-$fromNow = Get-Date
-
 echo ""
 echo ""
 echo ">>>>>>> Lets fright those RasPIs out of the swarm: <<<<<<<<"
 echo ""
+
+$fromNow = Get-Date
 
 $swarm = WinSCP.com /command "open sftp://pirate:hypriot@$rasPiManager/ -hostkey=*" "call docker node ls" "exit"        # docker-machine ssh manager "docker node ls"
 

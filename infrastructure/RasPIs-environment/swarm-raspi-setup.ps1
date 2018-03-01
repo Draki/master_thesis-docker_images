@@ -1,9 +1,15 @@
 # From:  https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/
-# Modified by: Daniel Rodriguez Rodriguez
+# Created by: Daniel Rodriguez Rodriguez
+#
+# Current development github branch
+$GithubBranch="master"
+# Pointer to the stack-descriptor file
+$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_rpi.yml"
 #
 # Run from PowerShell console as Administrator with the command:
 #   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\RasPIs-environment\swarm-raspi-setup-step.ps1
 # Swarm mode using Donly RaspberryPIes
+
 
 # Chose a name for the stack, number of manager machines and number of worker machines
 $StackName="TheStackOfDani"
@@ -11,16 +17,7 @@ $rasPiManagers = @("node1")
 $rasPiWorkers = @("node2","node3","node4")
 
 
-
-
-# Current development github branch
-$GithubBranch="infrastructure_deployment"
-
-# Pointer to the stack-descriptor filepowershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\RasPIs-environment\swarm-raspi-setup-step2.ps1
-$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/docker-stack_rpi.yml"
-
-
-
+## Creating Docker Swarm...
 $fromNow = Get-Date
 $managerZero = $rasPiManagers[0]
 

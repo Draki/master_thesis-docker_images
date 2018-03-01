@@ -3,7 +3,7 @@ version: '3.4'
 services:
 
   spark-master:
-    image: danielrodriguez/docker-spark-raspbian:infrastructure_deployment
+    image: danielrodriguez/docker-spark-raspbian
     command: bin/spark-class org.apache.spark.deploy.master.Master -h spark-master
     hostname: spark-master
     environment:
@@ -38,7 +38,7 @@ services:
           - spark-master
 
   spark-worker:
-    image: danielrodriguez/docker-spark-raspbian:infrastructure_deployment
+    image: danielrodriguez/docker-spark-raspbian
     command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
     hostname: spark-worker
     environment:

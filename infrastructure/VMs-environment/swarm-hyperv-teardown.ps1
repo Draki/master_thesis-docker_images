@@ -1,6 +1,7 @@
 # From:  https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/
 # Run from PowerShell console as Administrator with the command:
 #   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesisB\infrastructure\VMs-environment\docker-machine-VMs\swarm-node-hyperv-teardown.ps1
+
 $fromNow = Get-Date
 
 # $StackName="TheStackOfDani"
