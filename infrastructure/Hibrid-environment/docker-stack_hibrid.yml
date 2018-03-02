@@ -6,10 +6,15 @@ services:
     image: danielrodriguez/docker-spark-debian
     command: bin/spark-class org.apache.spark.deploy.master.Master -h spark-master
     hostname: spark-master
+    extra_hosts:
+     - "node1:192.168.1.121"
+     - "node2:192.168.1.122"
+     - "node3:192.168.1.123"
+     - "node4:192.168.1.124"
     environment:
       MASTER: spark://spark-master:7077
       SPARK_CONF_DIR: /conf/master
-      SPARK_PUBLIC_DNS: localhost
+      SPARK_PUBLIC_DNS: "$OWN_IP"
     ports:
       - 4040:4040
       - 6066:6066
@@ -41,12 +46,18 @@ services:
     image: danielrodriguez/docker-spark-raspbian
     command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
     hostname: spark-worker
+    extra_hosts:
+     - "node1:192.168.1.121"
+     - "node2:192.168.1.122"
+     - "node3:192.168.1.123"
+     - "node4:192.168.1.124"
     environment:
       SPARK_CONF_DIR: /conf/worker
       SPARK_WORKER_CORES: 4
       SPARK_WORKER_MEMORY: 1g
       SPARK_WORKER_PORT: 8881
       SPARK_WORKER_WEBUI_PORT: 8081
+      SPARK_PUBLIC_DNS: "$OWN_IP"
     ports:
       - 8081:8081
     depends_on:

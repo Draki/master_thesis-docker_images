@@ -38,6 +38,7 @@ $managerZeroip = docker-machine ip $managerZero
 
 docker-machine ssh $managerZero "docker swarm init --listen-addr $managerZeroip --advertise-addr $managerZeroip"
 docker-machine ssh $managerZero "docker node update --label-add role=spark_master --label-add architecture=x86_64 $managerZero"
+docker-machine ssh $managerZero "export OWN_IP=$(echo $SSH_CONNECTION | awk '{print $3; exit}')"
 
 
 
@@ -45,12 +46,6 @@ docker-machine ssh $managerZero "docker node update --label-add role=spark_maste
 # get worker token
 $workertoken = docker-machine ssh $managerZero "docker swarm join-token worker -q"
 
-Foreach ($node in $rasPiWorkers) {
-	echo "======> $node joining swarm as worker ..."
-	$nodeip = docker-machine ip $node
-	docker-machine ssh "$node" "docker swarm join --token $workertoken --listen-addr $nodeip --advertise-addr $nodeip $managerZeroip"
-	docker-machine ssh $managerZero "docker node update --label-add role=spark_worker --label-add architecture=x86_64 $node"
-}
 
 # show members of swarm
 docker-machine ssh $managerZero "docker node ls"
@@ -60,7 +55,7 @@ echo "$joinAsWorker"
 echo "`n`n======> Joining worker raspis to the swarm ...`n"
 Foreach ($node in $rasPiWorkers) {
     echo "$node joining the swarm"
-    WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call docker swarm join --token $workertoken $managerZeroip" "exit"
+    WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call docker swarm join --token $workertoken $managerZeroip" "call export OWN_IP=$(echo $SSH_CONNECTION | awk '{print $3; exit}')" "exit"
     docker-machine ssh $managerZero "docker node update --label-add role=spark_worker --label-add architecture=rpi $node"             # Label Spark workers nodes with their roles
 }
 
