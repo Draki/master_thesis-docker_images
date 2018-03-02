@@ -19,14 +19,14 @@ services:
       - type: bind
         read_only: true
         source: app
-        target: /usr/spark-2.2.0/app
+        target: /usr/spark-2.2.1/app
       - type: bind
         read_only: true
         source: data
-        target: /usr/spark-2.2.0/data
+        target: /usr/spark-2.2.1/data
       - type: bind
         source: results
-        target: /usr/spark-2.2.0/results
+        target: /usr/spark-2.2.1/results
     deploy:
       placement:
         constraints:
@@ -43,8 +43,8 @@ services:
     hostname: spark-worker
     environment:
       SPARK_CONF_DIR: /conf/worker
-      SPARK_WORKER_CORES: 2
-      SPARK_WORKER_MEMORY: 4g
+      SPARK_WORKER_CORES: 4
+      SPARK_WORKER_MEMORY: 1g
       SPARK_WORKER_PORT: 8881
       SPARK_WORKER_WEBUI_PORT: 8081
       SPARK_PUBLIC_DNS: localhost

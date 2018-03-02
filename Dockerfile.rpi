@@ -75,10 +75,5 @@ RUN curl -sL --retry 3 \
 # Copy configuration files to the image
 COPY conf .
 
-# Copy developed analyzer app files of master and worker to the image
-RUN mkdir app
-RUN mkdir data
-RUN mkdir results
-
 WORKDIR $SPARK_HOME
 CMD ["bin/spark-class", "org.apache.spark.deploy.master.Master"]

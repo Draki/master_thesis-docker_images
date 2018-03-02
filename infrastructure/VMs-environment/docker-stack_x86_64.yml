@@ -19,14 +19,14 @@ services:
       - type: bind
         read_only: true
         source: app
-        target: /usr/spark-2.2.0/app
+        target: /usr/spark-2.2.1/app
       - type: bind
         read_only: true
         source: data
-        target: /usr/spark-2.2.0/data
+        target: /usr/spark-2.2.1/data
       - type: bind
         source: results
-        target: /usr/spark-2.2.0/results
+        target: /usr/spark-2.2.1/results
     deploy:
       placement:
         constraints:
