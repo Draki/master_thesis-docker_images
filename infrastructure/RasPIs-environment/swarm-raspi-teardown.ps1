@@ -8,9 +8,14 @@ echo ""
 echo ">>>>>>> Lets fright those RasPIs out of the swarm: <<<<<<<<"
 echo ""
 
+$StackName="TheStackOfDani"
+docker-machine ssh $rasPiManager "docker stack rm $StackName"
+
+
 $fromNow = Get-Date
 
 $swarm = WinSCP.com /command "open sftp://pirate:hypriot@$rasPiManager/ -hostkey=*" "call docker node ls" "exit"        # docker-machine ssh manager "docker node ls"
+
 
 $leader = ($swarm -match "node\d\s+Ready\s+Active(?=\s+Leader)")  -split '\s+' -match 'node.'
 $managers = ($swarm -match "node\d\s+Ready\s+Active(?=\s+Reachable)")  -split '\s+' -match 'node.'
