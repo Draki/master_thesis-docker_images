@@ -30,7 +30,6 @@ docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName $managerZero
 docker-machine ls
 
 
-
 ## Creating Docker Swarm...
 echo "`n>>>>>>>>>> Building the docker swarm <<<<<<<<<<`n"
 echo "======> Initializing first swarm manager ..."
@@ -38,7 +37,7 @@ $managerZeroip = docker-machine ip $managerZero
 
 docker-machine ssh $managerZero "docker swarm init --listen-addr $managerZeroip --advertise-addr $managerZeroip"
 docker-machine ssh $managerZero "docker node update --label-add role=spark_master --label-add architecture=x86_64 $managerZero"
-docker-machine ssh $managerZero "export OWN_IP=$(echo $SSH_CONNECTION | awk '{print $3; exit}')"
+docker-machine ssh $managerZero "if [ -z `${OWN_IP} ]; then echo export OWN_IP=\'`$(echo `$SSH_CONNECTION | awk '{print `$3; exit}')\' | sudo tee -a /etc/profile; else echo '`$OWN_IP is already set'; fi"
 
 
 
@@ -50,12 +49,11 @@ $workertoken = docker-machine ssh $managerZero "docker swarm join-token worker -
 # show members of swarm
 docker-machine ssh $managerZero "docker node ls"
 
-$dockerCommand = @()
 echo "$joinAsWorker"
 echo "`n`n======> Joining worker raspis to the swarm ...`n"
 Foreach ($node in $rasPiWorkers) {
     echo "$node joining the swarm"
-    WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call docker swarm join --token $workertoken $managerZeroip" "call export OWN_IP=$(echo $SSH_CONNECTION | awk '{print $3; exit}')" "exit"
+    WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call if [ -z `${OWN_IP} ]; then echo export OWN_IP=\'`$(echo `$SSH_CONNECTION | awk '{print `$3; exit}')\' | sudo tee -a /etc/profile; else echo '`$OWN_IP is already set'; fi" "call docker swarm join --token $workertoken $managerZeroip" "exit"
     docker-machine ssh $managerZero "docker node update --label-add role=spark_worker --label-add architecture=rpi $node"             # Label Spark workers nodes with their roles
 }
 
@@ -75,6 +73,7 @@ docker-machine ssh $managerZero "wget $DockerStackFile --no-check-certificate --
 # And deploy it:
 docker-machine ssh $managerZero "docker stack deploy --compose-file docker-stack.yml --resolve-image never $StackName"
 # show the service
+echo "======> docker-machine ssh $managerZero `"docker stack services $StackName`""
 docker-machine ssh $managerZero "docker stack services $StackName"
 
 
@@ -82,5 +81,6 @@ $timeItTook = (new-timespan -Start $fromNow).TotalSeconds
 echo "======>"
 echo "======> The deployment took: $timeItTook seconds"
 
+echo "docker-machine ssh $managerZero `"docker stack services $StackName`""
 echo "======>"
 echo "======> You can access to the web user interface of the spark master at: $managerZeroip :8080"
