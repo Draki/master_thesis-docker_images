@@ -50,10 +50,6 @@ services:
       SPARK_PUBLIC_DNS: localhost
     ports:
       - 8081:8081
-    volumes:
-      - type: bind
-        source: /home/pirate/results
-        target: /usr/spark-2.3.0/results
     depends_on:
       - spark-master
     deploy:
