@@ -3,7 +3,7 @@ version: '3.4'
 services:
 
   spark-master:
-    image: danielrodriguez/docker-spark-debian
+    image: danielrodriguez/docker-spark-raspbian
     command: bin/spark-class org.apache.spark.deploy.master.Master -h spark-master
     hostname: spark-master
     environment:
@@ -19,19 +19,19 @@ services:
       - type: bind
         read_only: true
         source: app
-        target: /usr/spark-2.2.1/app
+        target: /usr/spark-2.3.0/app
       - type: bind
         read_only: true
         source: data
-        target: /usr/spark-2.2.1/data
+        target: /usr/spark-2.3.0/data
       - type: bind
         source: results
-        target: /usr/spark-2.2.1/results
+        target: /usr/spark-2.3.0/results
     deploy:
       placement:
         constraints:
           - node.labels.role == spark_master
-          - node.labels.architecture == x86_64
+          - node.labels.architecture == rpi
     networks:
       thesisnet:
         aliases:
@@ -50,15 +50,19 @@ services:
       SPARK_PUBLIC_DNS: localhost
     ports:
       - 8081:8081
+    volumes:
+      - type: bind
+        source: results
+        target: /usr/spark-2.3.0/results
     depends_on:
       - spark-master
     deploy:
-      mode: replicated
-      replicas: 4
       placement:
         constraints:
           - node.labels.role == spark_worker
-          - node.labels.architecture == rpi
+          - node.labels.architecture == x86_64
+      mode: replicated
+      replicas: 3
       restart_policy:
         condition: on-failure
     networks:

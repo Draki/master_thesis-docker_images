@@ -1,5 +1,5 @@
 # Run from PowerShell console as Administrator with the command:
-#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\Hibrid-environment\swarm-hibrid-teardown.ps1
+#   powershell -executionpolicy bypass -File .\infrastructure\Hibrid-environment\swarm-teardown.ps1
 
 $fromNow = Get-Date
 $manager = "vmNode1"
