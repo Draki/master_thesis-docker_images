@@ -64,6 +64,21 @@ services:
     networks:
       thesisnet:
 
+  hadoop-master:
+    image: sequenceiq/hadoop-docker
+    hostname: hadoop-master
+    ports:
+      - 50070:50070
+    deploy:
+      placement:
+        constraints:
+          - node.labels.architecture == x86_64
+    networks:
+      thesisnet:
+        aliases:
+          - hadoop
+
+
 networks:
   thesisnet:
     driver: overlay
