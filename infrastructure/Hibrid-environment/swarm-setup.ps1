@@ -1,16 +1,16 @@
 # Swarm mode using Docker Machine as manager and RaspberryPis as workers
 # Created by: Daniel Rodriguez Rodriguez
 #
+#
 # At the Hyper-V Manager app on Windows, under "ethernet adapter", create a Virtual Switch (as an "external network") called:
 $SwitchName = "virtualPFC"
-# Current development github branch
-$GithubBranch="master"
-# Pointer to the stack-descriptor file
-$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/infrastructure/Hibrid-environment/docker-stack_hibrid.yml"
-#
 # Run from PowerShell console as Administrator with the command:
-#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\Hibrid-environment\swarm-hibrid-setup.ps1
+#  powershell -executionpolicy bypass -File .\infrastructure\Hibrid-environment\swarm-setup.ps1
 
+
+# Selecting the right "docker-stack.yml" file
+$GithubBranch="master"
+$infrastructure="Hibrid"
 
 # Chose a name for the stack, number of manager machines and number of worker machines
 $StackName="TheStackOfDani"
@@ -67,8 +67,12 @@ docker-machine ssh $managerZero "docker node ls"
 # Prepare the node $managerZero:
 docker-machine ssh $managerZero "mkdir app; mkdir data; mkdir results"
 
+Foreach ($node in $rasPiWorkers) {
+    WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call mkdir results" "exit"
+}
+
 # Get the docker-stack.yml file from github:
-docker-machine ssh $managerZero "wget $DockerStackFile --no-check-certificate --output-document docker-stack.yml"
+docker-machine ssh $managerZero "wget https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/infrastructure/$infrastructure-environment/docker-stack.yml --no-check-certificate --output-document docker-stack.yml 2> /dev/null"
 
 # And deploy it:
 docker-machine ssh $managerZero "docker stack deploy --compose-file docker-stack.yml --resolve-image never $StackName"

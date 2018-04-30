@@ -1,6 +1,7 @@
 # Run from PowerShell console as Administrator with the command:
-#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\RasPIs-environment\swarm-raspi-teardown.ps1
+#   powershell -executionpolicy bypass -File .\infrastructure\RasPIs-environment\swarm-teardown.ps1
 
+$fromNow = Get-Date
 $rasPiManager = "node1"
 
 echo ""
@@ -9,13 +10,10 @@ echo ">>>>>>> Lets fright those RasPIs out of the swarm: <<<<<<<<"
 echo ""
 
 $StackName="TheStackOfDani"
-docker-machine ssh $rasPiManager "docker stack rm $StackName"
+WinSCP.com /command "open sftp://pirate:hypriot@$rasPiManager/ -hostkey=*" "call docker stack rm $StackName" "exit"
 
-
-$fromNow = Get-Date
 
 $swarm = WinSCP.com /command "open sftp://pirate:hypriot@$rasPiManager/ -hostkey=*" "call docker node ls" "exit"        # docker-machine ssh manager "docker node ls"
-
 
 $leader = ($swarm -match "node\d\s+Ready\s+Active(?=\s+Leader)")  -split '\s+' -match 'node.'
 $managers = ($swarm -match "node\d\s+Ready\s+Active(?=\s+Reachable)")  -split '\s+' -match 'node.'

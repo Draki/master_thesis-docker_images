@@ -1,15 +1,16 @@
+# Swarm mode using only RaspberryPI nodes
 # From:  https://github.com/docker/labs/blob/master/swarm-mode/beginner-tutorial/
 # Created by: Daniel Rodriguez Rodriguez
 #
-# Current development github branch
-$GithubBranch="master"
-# Pointer to the stack-descriptor file
-$DockerStackFile="https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/infrastructure/RasPIs-environment/docker-stack_rpi.yml"
+#
 #
 # Run from PowerShell console as Administrator with the command:
-#   powershell -executionpolicy bypass -File C:\Users\drago\IdeaProjects\master_thesis-docker_images\infrastructure\RasPIs-environment\swarm-raspi-setup-step.ps1
-# Swarm mode using Donly RaspberryPIes
+#  powershell -executionpolicy bypass -File .\infrastructure\RasPIs-environment\swarm-setup.ps1
 
+
+# Selecting the right "docker-stack.yml" file
+$GithubBranch="master"
+$infrastructure="RasPIs"
 
 # Chose a name for the stack, number of manager machines and number of worker machines
 $StackName="TheStackOfDani"
@@ -63,8 +64,12 @@ WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" $docke
 # Prepare the node manager:
 $dockerCommand = @("mkdir app; mkdir data; mkdir results")
 
+Foreach ($node in $rasPiWorkers) {
+    WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call mkdir results" "exit"
+}
+
 # Get the docker-stack.yml file from github:
-$dockerCommand += "wget $DockerStackFile --no-check-certificate --output-document docker-stack.yml 2> /dev/null"
+$dockerCommand += "wget https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/infrastructure/$infrastructure-environment/docker-stack.yml --no-check-certificate --output-document docker-stack.yml 2> /dev/null"
 
 # And deploy it:
 $dockerCommand += "docker stack deploy --compose-file docker-stack.yml --resolve-image never $StackName"
