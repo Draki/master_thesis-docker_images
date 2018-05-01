@@ -33,7 +33,7 @@ services:
           - node.labels.role == spark_master
           - node.labels.architecture == rpi
     networks:
-      thesisnet:
+      swarmnet:
         aliases:
           - spark-master
 
@@ -62,10 +62,10 @@ services:
       restart_policy:
         condition: on-failure
     networks:
-      thesisnet:
+      swarmnet:
 
 networks:
-  thesisnet:
+  swarmnet:
     driver: overlay
 
 volumes:
