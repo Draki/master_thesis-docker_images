@@ -82,8 +82,6 @@ echo "======>"
 echo "======> The deployment took: $timeItTook seconds"
 
 
-docker-machine ssh $managerZero "docker stack deploy --compose-file docker-stack.yml --resolve-image never $StackName"
-
 echo "docker-machine ssh $managerZero `"docker stack services $StackName`""
 echo "======>"
 echo "======> You can access to the web user interface of the spark master at: $managerZeroip :8080"

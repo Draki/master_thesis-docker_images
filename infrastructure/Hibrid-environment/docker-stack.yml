@@ -30,8 +30,6 @@ services:
           - node.labels.architecture == x86_64
     networks:
       thesisnet:
-        aliases:
-          - spark-master
 
   spark-worker:
     image: danielrodriguez/docker-spark-raspbian
@@ -76,8 +74,6 @@ services:
           - node.labels.architecture == x86_64
     networks:
       thesisnet:
-        aliases:
-          - hadoop
 
 
 networks:
