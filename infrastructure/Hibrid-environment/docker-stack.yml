@@ -56,6 +56,22 @@ services:
     networks:
       thesisnet:
 
+  hadoop-master:
+    image: sequenceiq/hadoop-docker:2.7.1
+    hostname: hadoop-master
+    ports:
+      - 50070:50070
+    volumes:
+      - type: bind
+        source: data
+        target: /usr/local/hadoop/data
+    deploy:
+      placement:
+        constraints:
+          - node.labels.architecture == x86_64
+    networks:
+      thesisnet:
+
 networks:
   thesisnet:
     driver: overlay
