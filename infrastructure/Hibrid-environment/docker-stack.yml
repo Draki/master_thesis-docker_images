@@ -21,10 +21,6 @@ services:
         source: app
         target: /usr/spark-2.3.0/app
       - type: bind
-        read_only: true
-        source: data
-        target: /usr/spark-2.3.0/data
-      - type: bind
         source: results
         target: /usr/spark-2.3.0/results
     deploy:
@@ -69,6 +65,11 @@ services:
     hostname: hadoop-master
     ports:
       - 50070:50070
+    volumes:
+      - type: bind
+        read_only: true
+        source: data
+        target: /data
     deploy:
       placement:
         constraints:

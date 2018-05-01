@@ -1,4 +1,4 @@
 .idea
 apps
 image*
-infrastructure/hadoop
+infrastructure/hadoop*

@@ -6,9 +6,10 @@ $manager = "vmNode1"
 #$rasPiWorkers = 4
 
 
-# $StackName="TheStackOfDani"
-# docker-machine ssh $manager "docker stack rm $StackName"
-
+$StackName="TheStackOfDani"
+docker-machine ssh $manager "docker stack rm $StackName"
+#docker stop $(docker ps -a -q)
+#docker rm $(docker ps -a -q)
 
 echo ""
 echo ""
