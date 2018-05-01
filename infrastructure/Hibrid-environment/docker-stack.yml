@@ -65,9 +65,8 @@ services:
       - 50070:50070
     volumes:
       - type: bind
-        read_only: true
         source: data
-        target: /data
+        target: /usr/local/hadoop/data
     deploy:
       placement:
         constraints:
