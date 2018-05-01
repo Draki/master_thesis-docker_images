@@ -8,7 +8,7 @@ language: bash
 env:
   global:
     - JAVA_VERSION=jdk1.8.131
-      HADOOP_VERSION=hadoop-2.7.3
+      HADOOP_VERSION=hadoop-2.7.1
       SPARK_VERSION=spark-2.3.0
       VERSION=${JAVA_VERSION}_${HADOOP_VERSION}_${SPARK_VERSION}
   matrix:

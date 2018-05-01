@@ -65,7 +65,7 @@ docker-machine ssh $managerZero "docker node ls"
 ## Services deployment
 
 # Prepare the node $managerZero:
-docker-machine ssh $managerZero "mkdir app; mkdir data; mkdir results"
+docker-machine ssh $managerZero "mkdir app; mkdir results"
 
 # Get the docker-stack.yml file from github:
 docker-machine ssh $managerZero "wget https://raw.githubusercontent.com/Draki/master_thesis-docker_images/$GithubBranch/infrastructure/$infrastructure-environment/docker-stack.yml --no-check-certificate --output-document docker-stack.yml 2> /dev/null"

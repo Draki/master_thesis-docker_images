@@ -48,7 +48,7 @@ RUN curl -sL --retry 3 --insecure \
   && rm -rf $JAVA_HOME/man
 
 # HADOOP
-ENV HADOOP_VERSION 2.7.3
+ENV HADOOP_VERSION 2.7.1
 ENV HADOOP_HOME /usr/hadoop-$HADOOP_VERSION
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 ENV PATH $PATH:$HADOOP_HOME/bin
@@ -74,6 +74,10 @@ RUN curl -sL --retry 3 \
 
 # Copy configuration files to the image
 COPY conf .
+
+# Copy developed analyzer app files of master and worker to the image
+RUN mkdir app
+RUN mkdir results
 
 WORKDIR $SPARK_HOME
 CMD ["bin/spark-class", "org.apache.spark.deploy.master.Master"]
