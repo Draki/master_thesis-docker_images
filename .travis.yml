@@ -7,9 +7,9 @@ language: bash
 
 env:
   global:
-    - HADOOP_VERSION=hadoop-2.7.1
-      SPARK_VERSION=spark-2.3.0
-      VERSION=${HADOOP_VERSION}_${SPARK_VERSION}
+    - HADOOP_VERSION=2.7.1
+      SPARK_VERSION=2.3.0
+      VERSION=hadoop-${HADOOP_VERSION}_spark-${SPARK_VERSION}
   matrix:
     - ARCH=amd64
       DOCKER_BUILD=danielrodriguez/docker-spark-debian
@@ -17,7 +17,7 @@ env:
     - ARCH=arm
       DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
       DOCKERFILE=Dockerfile.rpi
-
+      
 script:
 # prepare qemu
 - >
