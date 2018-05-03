@@ -7,10 +7,9 @@ language: bash
 
 env:
   global:
-    - JAVA_VERSION=jdk1.8.131
-      HADOOP_VERSION=hadoop-2.7.1
+    - HADOOP_VERSION=hadoop-2.7.1
       SPARK_VERSION=spark-2.3.0
-      VERSION=${JAVA_VERSION}_${HADOOP_VERSION}_${SPARK_VERSION}
+      VERSION=${HADOOP_VERSION}_${SPARK_VERSION}
   matrix:
     - ARCH=amd64
       DOCKER_BUILD=danielrodriguez/docker-spark-debian
@@ -26,7 +25,7 @@ script:
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
   fi
 # build image
-- docker build -t ${DOCKER_BUILD}:${VERSION} -f ${DOCKERFILE} .
+- docker build -t ${DOCKER_BUILD}:${VERSION} --build-arg HADOOP_VERSION=${HADOOP_VERSION} --build-arg SPARK_VERSION=${SPARK_VERSION} -f ${DOCKERFILE} .
 # test image
 - docker run --rm ${DOCKER_BUILD}:${VERSION} /bin/echo "Success."
 # push image
