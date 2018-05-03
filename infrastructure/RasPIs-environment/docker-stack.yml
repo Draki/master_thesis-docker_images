@@ -56,7 +56,7 @@ services:
       placement:
         constraints:
           - node.labels.role == spark_worker
-          - node.labels.architecture == x86_64
+          - node.labels.architecture == rpi
       mode: replicated
       replicas: 3
       restart_policy:

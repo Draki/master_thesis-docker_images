@@ -17,7 +17,7 @@ env:
     - ARCH=arm
       DOCKER_BUILD=danielrodriguez/docker-spark-raspbian
       DOCKERFILE=Dockerfile.rpi
-      
+
 script:
 # prepare qemu
 - >
