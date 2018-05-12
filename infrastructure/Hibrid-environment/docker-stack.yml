@@ -58,7 +58,7 @@ services:
 
   hadoop-master:
     image: sequenceiq/hadoop-docker:2.7.1
-    hostname: hadoop-master
+    hostname: hadoop
     ports:
       - 50070:50070
     volumes:
