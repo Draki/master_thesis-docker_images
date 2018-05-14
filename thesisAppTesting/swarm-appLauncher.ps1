@@ -4,7 +4,7 @@
 #  powershell -executionpolicy bypass -File .\infrastructure\Hibrid-environment\swarm-appLauncher.ps1
 ##
 
-$application = "thesisapp_beta_0.8.jar"
+$application = "thesisapp_beta_0.9.jar"
 $data = "DelightingCustomersBDextract2Formatted.json"
 $sampleApplicationConfigs = @("dataExplorer_sample","dataExplorer_sample2","recommenderALS_sample","recommenderGraphD_sample")
 
@@ -24,7 +24,7 @@ docker-machine ssh $managerZero "wget https://raw.githubusercontent.com/Draki/ma
 docker-machine ssh $managerZero "docker exec $sparkContainer /usr/hadoop-2.7.1/bin/hdfs dfs -put data/$data hdfs://hadoop-master:9000/data/"
 docker-machine ssh $managerZero "docker exec $sparkContainer /usr/hadoop-2.7.1/bin/hdfs dfs -ls hdfs://hadoop-master:9000/data/"
 
-docker-machine ssh $managerZero "wget https://github.com/Draki/master_thesis-app/releases/download/hibridEnvReady/$application --no-check-certificate --output-document ./app/$application 2> /dev/null"
+docker-machine ssh $managerZero "wget https://github.com/Draki/master_thesis-app/releases/download/app/$application --no-check-certificate --output-document ./app/$application 2> /dev/null"
 $appConfigs = ""
 Foreach ($sample in $sampleApplicationConfigs){
     docker-machine ssh $managerZero "wget https://raw.githubusercontent.com/Draki/master_thesis-app/master/configExamples/$sample --no-check-certificate --output-document ./app/$sample 2> /dev/null"
