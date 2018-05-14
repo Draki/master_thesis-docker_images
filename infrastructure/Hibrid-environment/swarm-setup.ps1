@@ -24,7 +24,7 @@ $fromNow = Get-Date
 
 # create manager machine
 echo "======> Creating manager machine ..."
-docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName $managerZero
+docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --hyperv-memory 8192 --hyperv-cpu-count 4 --hyperv-boot2docker-url https://github.com/boot2docker/boot2docker/releases/download/v18.04.0-ce/boot2docker.iso $managerZero
 
 # list all machines
 docker-machine ls
@@ -72,9 +72,6 @@ docker-machine ssh $managerZero "wget https://raw.githubusercontent.com/Draki/ma
 
 # And deploy it:
 docker-machine ssh $managerZero "docker stack deploy --compose-file docker-stack.yml --resolve-image never $StackName"
-# show the service
-echo "======> docker-machine ssh $managerZero `"docker stack services $StackName`""
-docker-machine ssh $managerZero "docker stack services $StackName"
 
 
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds
@@ -84,5 +81,11 @@ echo "======> The deployment took: $timeItTook seconds"
 
 echo "docker-machine ssh $managerZero `"docker stack services $StackName`""
 echo "======>"
-echo "======> You can access to the web user interface of the spark master at: $managerZeroip :8080"
+echo "======> You can access to the web user interface of the spark master at:" "${managerZeroip}:8080" ""
+echo "======> You can access to the web user interface of the hadoop master at:" "${managerZeroip}:50070" ""
+
+Start-Sleep -s 15
+# show the service
+echo "docker-machine ssh $managerZero `"docker stack services $StackName`""
+docker-machine ssh $managerZero "docker stack services $StackName"
 
