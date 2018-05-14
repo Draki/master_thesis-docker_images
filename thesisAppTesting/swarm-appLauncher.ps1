@@ -1,12 +1,12 @@
 # Swarm mode using Docker Machine as manager and RaspberryPis as workers
 # Created by: Daniel Rodriguez Rodriguez
 #
-#  powershell -executionpolicy bypass -File .\infrastructure\Hibrid-environment\swarm-appLauncher.ps1
+#  powershell -executionpolicy bypass -File .\thesisAppTesting\swarm-appLauncher.ps1
 ##
 
-$application = "thesisapp_beta_0.9.jar"
+$application = "thesisapp_0.9.1.jar"
 $data = "DelightingCustomersBDextract2Formatted.json"
-$sampleApplicationConfigs = @("dataExplorer_sample","dataExplorer_sample2","recommenderALS_sample","recommenderGraphD_sample")
+$sampleApplicationConfigs = @("commons","dataExplorer_sample","dataExplorer_sample2","recommenderALS_sample","recommenderGraphD_sample")
 
 $GithubBranch="master"
 
@@ -31,4 +31,7 @@ Foreach ($sample in $sampleApplicationConfigs){
     $appConfigs += '"./app/' + $sample + '" '
 }
 
-docker-machine ssh $managerZero ""docker exec $sparkContainer spark-submit --class "thesisApp.ThesisAppLauncher" --deploy-mode client --master spark://spark-master:7077 --executor-memory 650m ./app/$application "hdfs://hadoop-master:9000" "/data/" "DelightingCustomersBDextract2Formatted.json" "/results/" $appConfigs ""
+docker-machine ssh $managerZero ""docker exec $sparkContainer spark-submit --class "thesisApp.ThesisAppLauncher" --deploy-mode client --master spark://spark-master:7077 --executor-memory 650m ./app/$application "hibrid" $appConfigs ""
+#docker-machine ssh $managerZero ""docker exec $sparkContainer spark-submit --class "thesisApp.ThesisAppLauncher" --deploy-mode client --master spark://spark-master:7077 --executor-memory 4g ./app/$application "hyperv" $appConfigs ""
+
+echo ""docker-machine ssh $managerZero "docker exec $sparkContainer /usr/hadoop-2.7.1/bin/hdfs dfs -cat hdfs://hadoop-master:9000/results/DelightingCustomersBDextract2Formatted/<date_log>/timeLog.json" ""

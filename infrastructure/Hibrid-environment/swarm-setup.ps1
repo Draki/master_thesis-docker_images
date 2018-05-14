@@ -24,7 +24,7 @@ $fromNow = Get-Date
 
 # create manager machine
 echo "======> Creating manager machine ..."
-docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --hyperv-memory 8192 --hyperv-cpu-count 4 --hyperv-boot2docker-url https://github.com/boot2docker/boot2docker/releases/download/v18.04.0-ce/boot2docker.iso $managerZero
+docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --hyperv-memory 8192 --hyperv-cpu-count 1 --hyperv-boot2docker-url https://github.com/boot2docker/boot2docker/releases/download/v18.04.0-ce/boot2docker.iso $managerZero
 
 # list all machines
 docker-machine ls
