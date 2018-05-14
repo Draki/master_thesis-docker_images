@@ -48,7 +48,7 @@ echo "======> Initializing first swarm manager ..."
 $managerZeroip = docker-machine ip $managerZero
 
 docker-machine ssh $managerZero "docker swarm init --advertise-addr $managerZeroip"
-docker-machine ssh $managerZero "docker node update --label-add role=spark_master --label-add architecture=x86_64 $managerZero"
+docker-machine ssh $managerZero "docker node update --label-add role=spark_master --label-add role=hadoop_master $managerZero"
 
 
 # other masters join swarm
@@ -60,7 +60,7 @@ If ($managers.Length -gt 1) {
         echo "======> $node joining swarm as manager ..."
         $nodeip = docker-machine ip $node
         docker-machine ssh "$node" "docker swarm join --token $managertoken --advertise-addr $nodeip $managerZeroip"
-        docker-machine ssh $managerZero "docker node update --label-add role=spark_worker --label-add architecture=x86_64 $node"
+        docker-machine ssh $managerZero "docker node update --label-add role=spark_worker $node"
     }
 }
 
@@ -84,7 +84,7 @@ docker-machine ssh $managerZero "docker node ls"
 ## Services deployment
 
 # Prepare the node $managerZero:
-docker-machine ssh $managerZero "mkdir app; mkdir data; mkdir results"
+docker-machine ssh $managerZero "mkdir app; mkdir results; mkdir data"
 
 Foreach ($node in $workers) {
 	docker-machine ssh "$node" "mkdir results"
@@ -96,13 +96,19 @@ docker-machine ssh $managerZero "wget https://raw.githubusercontent.com/Draki/ma
 
 # And deploy it:
 docker-machine ssh $managerZero "docker stack deploy --compose-file docker-stack.yml $StackName"
-# show the service
-docker-machine ssh $managerZero "docker stack services $StackName"
 
 
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds
 echo "======>"
 echo "======> The deployment took: $timeItTook seconds"
 
+
+echo "docker-machine ssh $managerZero `"docker stack services $StackName`""
 echo "======>"
-echo "======> You can access to the web user interface of the spark master at: $managerZeroip :8080"
+echo "======> You can access to the web user interface of the spark master at:" "${managerZeroip}:8080" ""
+echo "======> You can access to the web user interface of the hadoop master at:" "${managerZeroip}:50070" ""
+
+Start-Sleep -s 10
+# show the service
+echo "docker-machine ssh $managerZero `"docker stack services $StackName`""
+docker-machine ssh $managerZero "docker stack services $StackName"

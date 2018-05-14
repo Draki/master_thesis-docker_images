@@ -84,7 +84,7 @@ echo "======>"
 echo "======> You can access to the web user interface of the spark master at:" "${managerZeroip}:8080" ""
 echo "======> You can access to the web user interface of the hadoop master at:" "${managerZeroip}:50070" ""
 
-Start-Sleep -s 15
+Start-Sleep -s 10
 # show the service
 echo "docker-machine ssh $managerZero `"docker stack services $StackName`""
 docker-machine ssh $managerZero "docker stack services $StackName"

@@ -21,17 +21,20 @@ services:
         source: app
         target: /usr/spark-2.3.0/app
       - type: bind
+        read_only: true
+        source: data
+        target: /usr/spark-2.3.0/data
+      - type: bind
         source: results
         target: /usr/spark-2.3.0/results
-      - type: bind
-        source: data
-        target: /usr/local/hadoop/data
     deploy:
       placement:
         constraints:
           - node.labels.architecture == x86_64
     networks:
       thesisnet:
+        aliases:
+          - spark-master
 
   spark-worker:
     image: danielrodriguez/docker-spark-raspbian
@@ -40,12 +43,12 @@ services:
     environment:
       SPARK_CONF_DIR: /conf/worker
       SPARK_WORKER_CORES: 4
+      SPARK_WORKER_MEMORY: 650m
       SPARK_WORKER_PORT: 8881
       SPARK_WORKER_WEBUI_PORT: 8081
       SPARK_PUBLIC_DNS: localhost
       SPARK_EXECUTOR_MEMORY: 650m
       SPARK_DRIVER_MEMORY: 650m
-      SPARK_WORKER_MEMORY: 650m
       SPARK_DAEMON_MEMORY: 650m
     ports:
       - 8081:8081
@@ -73,6 +76,8 @@ services:
           - node.labels.architecture == x86_64
     networks:
       thesisnet:
+        aliases:
+          - hadoop-master
 
 networks:
   thesisnet:
