@@ -27,14 +27,14 @@ $managerZero = $managers[0]
 echo "======> Creating manager machines ..."
 Foreach ($node in $managers) {
 	echo "======> Creating $node machine ..."
-	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName $node
+	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --hyperv-memory 8192 --hyperv-cpu-count 1 --hyperv-boot2docker-url https://github.com/boot2docker/boot2docker/releases/download/v18.04.0-ce/boot2docker.iso $node
 }
 
 # create worker machines
 echo "======> Creating worker machines ..."
 Foreach ($node in $workers) {
 	echo "======> Creating $node machine ..."
-	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName $node
+	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --hyperv-memory 4096 --hyperv-cpu-count 2 --hyperv-boot2docker-url https://github.com/boot2docker/boot2docker/releases/download/v18.04.0-ce/boot2docker.iso $node
 }
 
 # list all machines
@@ -48,7 +48,7 @@ echo "======> Initializing first swarm manager ..."
 $managerZeroip = docker-machine ip $managerZero
 
 docker-machine ssh $managerZero "docker swarm init --advertise-addr $managerZeroip"
-docker-machine ssh $managerZero "docker node update --label-add role=spark_master --label-add role=hadoop_master $managerZero"
+docker-machine ssh $managerZero "docker node update --label-add role=master $managerZero"
 
 
 # other masters join swarm
