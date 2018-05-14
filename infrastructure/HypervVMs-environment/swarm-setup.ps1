@@ -34,7 +34,7 @@ Foreach ($node in $managers) {
 echo "======> Creating worker machines ..."
 Foreach ($node in $workers) {
 	echo "======> Creating $node machine ..."
-	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --hyperv-memory 4096 --hyperv-cpu-count 2 --hyperv-boot2docker-url https://github.com/boot2docker/boot2docker/releases/download/v18.04.0-ce/boot2docker.iso $node
+	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --hyperv-memory 4096 --hyperv-cpu-count 1 --hyperv-boot2docker-url https://github.com/boot2docker/boot2docker/releases/download/v18.04.0-ce/boot2docker.iso $node
 }
 
 # list all machines
