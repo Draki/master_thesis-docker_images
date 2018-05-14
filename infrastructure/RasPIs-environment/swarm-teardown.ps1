@@ -20,18 +20,20 @@ $managers = ($swarm -match "node\d\s+Ready\s+Active(?=\s+Reachable)")  -split '\
 $workers = ($swarm -match "node\d\s+Ready\s+Active(?!\s+[Leader|Reachable])")  -split '\s+' -match 'node.'
 
 
+$dockerCommand = @("call docker swarm leave --force", "call docker stop $(docker ps -a -q)", "call docker rm $(docker ps -a -q)", "call docker rmi $(docker images -q)")
+
 Foreach ($node in $workers) {
     echo "`n`n======>Worker node '$node' leaving the swarm"
-    WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call docker swarm leave" "exit"
+    WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" $dockerCommand "exit"
 }
 
 Foreach ($node in $managers) {
     echo "`n`n======>Manager node '$node' leaving the swarm"
-    WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call docker swarm leave --force" "exit"
+    WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" $dockerCommand "exit"
 }
 echo "`n`n======>Leader node '$leader' leaving the swarm"
 WinSCP.com /command "open sftp://pirate:hypriot@$leader/ -hostkey=*" "call rm -R ./*" "exit"
-WinSCP.com /command "open sftp://pirate:hypriot@$leader/ -hostkey=*" "call docker swarm leave --force" "exit"
+WinSCP.com /command "open sftp://pirate:hypriot@$leader/ -hostkey=*" $dockerCommand "exit"
 
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds
 echo "`n`n======>"

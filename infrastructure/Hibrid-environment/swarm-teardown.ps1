@@ -8,8 +8,8 @@ $manager = "vmNode1"
 
 $StackName="TheStackOfDani"
 docker-machine ssh $manager "docker stack rm $StackName"
-#docker stop $(docker ps -a -q)
-#docker rm $(docker ps -a -q)
+
+$dockerCommand = @("call docker swarm leave", "call docker stop $(docker ps -a -q)", "call docker rm $(docker ps -a -q)", "call docker rmi $(docker images -q)")
 
 echo ""
 echo ""
@@ -27,7 +27,7 @@ $swarm = docker-machine ssh $manager "docker node ls"
 $workers = ($swarm -match "node\d\s+Ready\s+Active(?!\s+[Leader|Reachable])")  -split '\s+' -match 'node.'
 Foreach ($node in $workers) {
     echo "`n`n======>Worker node '$node' leaving the swarm"
-    WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" "call docker swarm leave" "exit"
+    WinSCP.com /command "open sftp://pirate:hypriot@$node/ -hostkey=*" $dockerCommand "exit"
 }
 
 #docker-machine ssh $manager "docker swarm leave --force"
