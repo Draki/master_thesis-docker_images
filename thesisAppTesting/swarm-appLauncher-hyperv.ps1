@@ -33,4 +33,4 @@ Foreach ($sample in $sampleApplicationConfigs){
 
 docker-machine ssh $managerZero ""docker exec $sparkContainer spark-submit --class "thesisApp.ThesisAppLauncher" --deploy-mode client --master spark://spark-master:7077 --executor-memory 4g ./app/$application "hyperv" $appConfigs ""
 
-echo ""docker-machine ssh $managerZero "docker exec $sparkContainer /usr/hadoop-2.7.1/bin/hdfs dfs -cat hdfs://hadoop-master:9000/results/DelightingCustomersBDextract2Formatted/<date_log>/timeLog.json" ""
+echo """docker-machine ssh $managerZero" "docker exec $sparkContainer /usr/hadoop-2.7.1/bin/hdfs dfs -cat hdfs://hadoop-master:9000/results/DelightingCustomersBDextract2Formatted/<date_log>/timeLog.json" ""

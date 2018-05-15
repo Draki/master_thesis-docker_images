@@ -9,7 +9,7 @@ $manager = "vmNode1"
 $StackName="TheStackOfDani"
 docker-machine ssh $manager "docker stack rm $StackName"
 
-$dockerCommand = @("call docker swarm leave", "call docker stop $(docker ps -a -q)", "call docker rm $(docker ps -a -q)", "call docker rmi $(docker images -q)")
+$dockerCommand = @('call docker swarm leave 2> /dev/null', 'call docker stop $(docker ps -a -q) 2> /dev/null', 'call docker rm $(docker ps -a -q) 2> /dev/null', 'call docker rmi $(docker images -q)')
 
 echo ""
 echo ""

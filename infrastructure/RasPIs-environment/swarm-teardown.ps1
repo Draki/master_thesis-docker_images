@@ -20,7 +20,7 @@ $managers = ($swarm -match "node\d\s+Ready\s+Active(?=\s+Reachable)")  -split '\
 $workers = ($swarm -match "node\d\s+Ready\s+Active(?!\s+[Leader|Reachable])")  -split '\s+' -match 'node.'
 
 
-$dockerCommand = @("call docker swarm leave --force", "call docker stop $(docker ps -a -q)", "call docker rm $(docker ps -a -q)", "call docker rmi $(docker images -q)")
+$dockerCommand = @('call docker swarm leave --force 2> /dev/null', 'call docker stop $(docker ps -a -q) 2> /dev/null', 'call docker rm $(docker ps -a -q) 2> /dev/null', 'call docker rmi $(docker images -q)')
 
 Foreach ($node in $workers) {
     echo "`n`n======>Worker node '$node' leaving the swarm"
