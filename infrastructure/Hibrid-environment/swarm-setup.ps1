@@ -86,6 +86,6 @@ echo "======> You can access to the web user interface of the hadoop master at:"
 
 Start-Sleep -s 10
 # show the service
-echo "docker-machine ssh $managerZero `"docker stack services $StackName`""
 docker-machine ssh $managerZero "docker stack services $StackName"
+echo "docker-machine ssh $managerZero `"docker stack services $StackName`""
 

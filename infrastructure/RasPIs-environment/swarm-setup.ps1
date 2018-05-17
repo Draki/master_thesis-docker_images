@@ -48,6 +48,18 @@ Foreach ($node in $rasPiWorkers) {
     $dockerCommand += "docker node update --label-add role=spark_worker --label-add architecture=rpi $node"             # Label Spark workers nodes with their roles
 }
 
+
+
+# HDFS node preparation
+$hdfsNode = "hdfsNode"
+$SwitchName = "virtualPFC"
+docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --hyperv-boot2docker-url https://github.com/boot2docker/boot2docker/releases/download/v18.04.0-ce/boot2docker.iso $hdfsNode
+echo "======> $hdfsNode joining swarm as hdfs node ..."
+docker-machine ssh hdfsNode "$joinAsWorker"
+$dockerCommand += "docker node update --label-add role=hadoop-master --label-add architecture=x86_64 $hdfsNode"
+
+
+
 # Label all nodes with their roles
 
 # show members of swarm

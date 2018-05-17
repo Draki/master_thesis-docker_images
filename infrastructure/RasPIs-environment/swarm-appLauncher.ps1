@@ -1,7 +1,7 @@
 # Swarm mode using Docker Machine as manager and RaspberryPis as workers
 # Created by: Daniel Rodriguez Rodriguez
 #
-#  powershell -executionpolicy bypass -File .\thesisAppTesting\swarm-appLauncher-hibrid.ps1
+#  powershell -executionpolicy bypass -File .\infrastructure\Hibrid-environment\swarm-appLauncher.ps1
 ##
 
 $application = "thesisapp_0.9.1.jar"

@@ -31,7 +31,6 @@ services:
       placement:
         constraints:
           - node.labels.role == spark_master
-          - node.labels.architecture == rpi
     networks:
       thesisnet:
         aliases:
@@ -44,10 +43,13 @@ services:
     environment:
       SPARK_CONF_DIR: /conf/worker
       SPARK_WORKER_CORES: 4
-      SPARK_WORKER_MEMORY: 1g
+      SPARK_WORKER_MEMORY: 650m
       SPARK_WORKER_PORT: 8881
       SPARK_WORKER_WEBUI_PORT: 8081
       SPARK_PUBLIC_DNS: localhost
+      SPARK_EXECUTOR_MEMORY: 650m
+      SPARK_DRIVER_MEMORY: 650m
+      SPARK_DAEMON_MEMORY: 650m
     ports:
       - 8081:8081
     depends_on:
@@ -56,13 +58,26 @@ services:
       placement:
         constraints:
           - node.labels.role == spark_worker
-          - node.labels.architecture == rpi
       mode: replicated
       replicas: 3
       restart_policy:
         condition: on-failure
     networks:
       thesisnet:
+
+  hadoop-master:
+    image: sequenceiq/hadoop-docker:2.7.1
+    hostname: hadoop-master
+    ports:
+      - 50070:50070
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == hadoop-master
+    networks:
+      thesisnet:
+        aliases:
+          - hadoop-master
 
 networks:
   thesisnet:

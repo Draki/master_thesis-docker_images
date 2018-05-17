@@ -35,6 +35,10 @@ echo "`n`n======>Leader node '$leader' leaving the swarm"
 WinSCP.com /command "open sftp://pirate:hypriot@$leader/ -hostkey=*" "call rm -R ./*" "exit"
 WinSCP.com /command "open sftp://pirate:hypriot@$leader/ -hostkey=*" $dockerCommand "exit"
 
+### Warning: This will remove all docker machines running ###
+docker-machine stop (docker-machine ls -q)
+docker-machine rm --force (docker-machine ls -q)
+
 $timeItTook = (new-timespan -Start $fromNow).TotalSeconds
 echo "`n`n======>"
 echo "======> The cleaning took: $timeItTook seconds"
