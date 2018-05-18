@@ -101,4 +101,16 @@ echo "`n`n======>"
 echo "======> The deployment took: $timeItTook seconds"
 
 echo "======>"
-echo "======> In a couple of minutes you will be able to access to the web user interface of the spark master at: $managerZero :8080"
+echo "======> In a couple of minutes you will be able to access to the web user interface of the spark master at: ${managerZero}:8080"
+echo "======> You can access to the web user interface of the hadoop master at:" "${managerZeroip}:50070" ""
+
+
+Start-Sleep -s 10
+# show the service
+
+# show the service
+WinSCP.com /command "open sftp://pirate:hypriot@$managerZero/ -hostkey=*" "call docker stack services $StackName" "exit"
+
+echo "docker-machine ssh $managerZero `"docker stack services $StackName`""
+echo "WinSCP.com /command `"open sftp://pirate:hypriot@$managerZero/ -hostkey=*`" `"call docker stack services $StackName`" `"exit`" "
+
