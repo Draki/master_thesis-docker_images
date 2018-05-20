@@ -31,6 +31,7 @@ Foreach ($sample in $sampleApplicationConfigs){
     $appConfigs += '"./app/' + $sample + '" '
 }
 
-docker-machine ssh $managerZero ""docker exec $sparkContainer spark-submit --class "thesisApp.ThesisAppLauncher" --deploy-mode client --master spark://spark-master:7077 --executor-memory 650m ./app/$application "hibrid" $appConfigs ""
-
-echo ""docker-machine ssh $managerZero "docker exec $sparkContainer /usr/hadoop-2.7.1/bin/hdfs dfs -cat hdfs://hadoop-master:9000/results/DelightingCustomersBDextract2Formatted/<date_log>/timeLog.json" ""
+#docker-machine ssh $managerZero ""docker exec $sparkContainer spark-submit --class "thesisApp.ThesisAppLauncher" --deploy-mode client --master spark://spark-master:7077 --executor-memory 650m ./app/$application "hibrid" $appConfigs ""
+echo "docker-machine ssh $managerZero `"docker exec $sparkContainer spark-submit --class `"thesisApp.ThesisAppLauncher`" --deploy-mode client --master spark://spark-master:7077 --executor-memory 650m ./app/$application `"hibrid`" $appConfigs "
+echo ""
+echo "docker-machine ssh $managerZero `"docker exec $sparkContainer /usr/hadoop-2.7.1/bin/hdfs dfs -cat hdfs://hadoop-master:9000/results/DelightingCustomersBDextract2Formatted/<date_log>/timeLog.json`" "

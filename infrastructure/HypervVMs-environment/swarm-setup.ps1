@@ -15,7 +15,7 @@ $infrastructure="HypervVMs"
 # Chose a name for the stack, number of manager machines and number of worker machines
 $StackName="TheStackOfDani"
 $managers = @("vmNode1")
-$workers = @("vmNode2","vmNode3","vmNode4")
+$workers = @("vmNode2","vmNode3","vmNode4","vmNode5")
 
 
 ## Creating virtual machines...
@@ -34,7 +34,7 @@ Foreach ($node in $managers) {
 echo "======> Creating worker machines ..."
 Foreach ($node in $workers) {
 	echo "======> Creating $node machine ..."
-	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --hyperv-memory 4096 --hyperv-cpu-count 1 --hyperv-boot2docker-url https://github.com/boot2docker/boot2docker/releases/download/v18.04.0-ce/boot2docker.iso $node
+	docker-machine create -d hyperv --hyperv-virtual-switch $SwitchName --hyperv-memory 650 --hyperv-cpu-count 1 --hyperv-boot2docker-url https://github.com/boot2docker/boot2docker/releases/download/v18.04.0-ce/boot2docker.iso $node
 }
 
 # list all machines
